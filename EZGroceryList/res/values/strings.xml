@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">EZ Grocery List</string>
+    <string name="action_settings">Settings</string>
+    <string name="pantry_screen">This is the pantry screen</string>
+    <string name="infor_screen">This is the information screen</string>
+    <string name="new_list">New List</string>
+    <string name="action_bar_code">Bar code scanner</string>
+    <string name="action_text">Text input</string>
+    <string name="action_email">Share by email</string>
+    <string name="action_voice">Voice input</string>
+	<string-array name="pantry_menu">
+	    <item>New List</item>
+	    <item>Change Name</item>
+	    <item>Category</item>
+	    <item>Save</item>
+	    <item>Remove</item>
+	    <item>Add to Shopping</item>
+	    <item>Other List 1</item>
+	    <item>Other List 2</item>
+	    <item>Other List 3</item>
+	</string-array>
+	
+</resources>
