@@ -1,20 +1,33 @@
 package ezgrocerylist.activity;
 
+import java.util.ArrayList;
+
 import com.ezgrocerylist.R;
 
+import ezgrocerylist.sql.DatabaseHandler;
+import ezgrocerylist.sql.Item;
+
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.OnNavigationListener;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
@@ -28,6 +41,7 @@ public class PantryActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pantry);
         listName = (TextView) findViewById(R.id.pantry_list_name_new);
+        Log.d("Pantry","list name=" + listName.getText().toString());
         actionName = (TextView) findViewById(R.id.pantry_action_name);
         
         //create drop down menu for the pantry list page
@@ -99,8 +113,9 @@ public class PantryActivity extends ActionBarActivity {
         actions.setDisplayShowTitleEnabled(false);
         actions.setListNavigationCallbacks(adapter, callback);
         
-        //list content
-        
+
+        //show the content of the list
+        showList();
 	}
 
 	@Override
@@ -120,6 +135,11 @@ public class PantryActivity extends ActionBarActivity {
 	            return true;
 	        case R.id.action_text:
 	        	actionName.setText("text input");
+	        	//call item input screen for an item
+	            Intent intent = new Intent(this, ItemActivity.class);
+	            
+	            intent.putExtra("listname",listName.getText().toString());
+	            startActivityForResult(intent,0);
 	            return true;
 	        case R.id.action_email:
 	        	actionName.setText("share by email");
@@ -139,7 +159,7 @@ public class PantryActivity extends ActionBarActivity {
 	 * make a new list
 	 */
 	protected void newList() {
-		listName.setText("");
+		listName.setText(R.string.new_list);
 		
 		
 	}
@@ -174,5 +194,49 @@ public class PantryActivity extends ActionBarActivity {
 
 		builder.show();
 	}
+    /*
+     * This method will be called whenever return from pantry screen, 
+     * shop screen and recipe screen.
+     * 
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (resultCode == RESULT_OK) {
+
+           // int calls = data.getExtras().getInt("CALLS");
+        	showList();
+        }
+        
+    }
+	/**
+	 * show the item information (read from database) on the screen
+	 * 
+	 */
+	private void showList() {
+		DatabaseHandler db = new DatabaseHandler(this);
+		
+		//retrieve items from database
+		ArrayList<Item> items = new ArrayList<Item>();
+		items = db.getItems(listName.getText().toString());
+		
+		//add view for these items if they are not null
+		if (items.size()!=0){
+			for (int i = 0; i < items.size();i++){
+				// create a new textview
+			    final TextView rowTextView = new TextView(this);
+
+			    // set some properties of rowTextView or something
+			    rowTextView.setText(items.get(i).getItemName() +"	"+
+			    items.get(i).getItemQuantity() + "	" + 
+			    		items.get(i).getItemUnit());
+
+			    // add the textview to the linearlayout
+			    LinearLayout pantryLayout = (LinearLayout) findViewById(R.id.activity_pantry);
+			    pantryLayout.addView(rowTextView);
+			}
+		}
+
+	}
 }

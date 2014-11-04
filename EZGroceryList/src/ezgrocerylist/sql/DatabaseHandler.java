@@ -1,5 +1,7 @@
 package ezgrocerylist.sql;
 
+import java.util.ArrayList;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,11 +11,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    private static final int    DATABASE_VERSION = 1;
+    private static final int    DATABASE_VERSION = 2;
 
     private static final String DATABASE_NAME = "EZgrocery";
 
-    private static final String TABLE_PANTRY = "pantryList";
+    private static final String TABLE_ITEMS = "items";
 
     private static final String KEY_LIST_NAME = "listName";
     private static final String KEY_ITEM_NAME = "itemName";
@@ -21,6 +23,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_ITEM_UNIT = "itemUnit";
     private static final String KEY_ITEM_PRICE = "itemPrice";
     private static final String KEY_ITEM_NOTE = "itemNote";
+    private static final String KEY_ITEM_CATEGORY = "itemCategory";
     
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -28,57 +31,64 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_TAGS_TABLE = "CREATE TABLE " + TABLE_PANTRY + "(" + KEY_LIST_NAME
+        String CREATE_TAGS_TABLE = "CREATE TABLE " + TABLE_ITEMS + "(" + KEY_LIST_NAME
                 + " TEXT NOT NULL," + KEY_ITEM_NAME  + " TEXT NOT NULL," + KEY_ITEM_QUANTITY 
                 + " INTEGER," + KEY_ITEM_UNIT + " TEXT," + KEY_ITEM_PRICE + " INTEGER," + 
-                KEY_ITEM_NOTE + "TEXT" + ")";
+                KEY_ITEM_NOTE + " TEXT," + KEY_ITEM_CATEGORY + " TEXT" + ")";
         db.execSQL(CREATE_TAGS_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PANTRY);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ITEMS);
         onCreate(db);
     }
 
     /**
      * Add a new item to the database.
      */
-    public void addItem(PantryList list, Item item) {
+    public void addItem(String listName, Item item) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_LIST_NAME, list.getListName());
+        values.put(KEY_LIST_NAME, listName);
         values.put(KEY_ITEM_NAME, item.getItemName());
         values.put(KEY_ITEM_QUANTITY, item.getItemQuantity());
         values.put(KEY_ITEM_UNIT, item.getItemUnit());
         values.put(KEY_ITEM_PRICE, item.getItemPrice());
         values.put(KEY_ITEM_NOTE, item.getItemNote());
-        db.insert(TABLE_PANTRY, null, values);
+        values.put(KEY_ITEM_CATEGORY, item.getItemCategory());
+        db.insert(TABLE_ITEMS, null, values);
         db.close();
     }
 
     /**
-     * Searches the database for the item with a certain name.
+     * Searches the database for the items in a given pantry list.
      * 
      */
-    public PantryList getListByName(String listName) {
+    public ArrayList<Item> getItems(String listName) {
         SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.query(TABLE_PANTRY, new String[] { KEY_LIST_NAME, KEY_ITEM_NAME, KEY_ITEM_QUANTITY,
-        		KEY_ITEM_UNIT, KEY_ITEM_PRICE, KEY_ITEM_NOTE }, KEY_LIST_NAME + "=?", new String[] { listName }, null, null, null, null);
-        if (!cursor.moveToFirst()) {
-            cursor.close();
-            db.close();
-            return null;
+        ArrayList<Item> items = new ArrayList<Item>();
+        Cursor cursor = db.query(TABLE_ITEMS, new String[] { KEY_LIST_NAME, KEY_ITEM_NAME, KEY_ITEM_QUANTITY,
+        		KEY_ITEM_UNIT, KEY_ITEM_PRICE, KEY_ITEM_NOTE,  KEY_ITEM_CATEGORY}, KEY_LIST_NAME + "=?", 
+        		new String[] { listName }, null, null, null, null);
+        if(cursor != null && cursor.moveToFirst()) {
+	        while (cursor.isAfterLast() == false) {
+	            //Calllog is a class with list of fileds 
+	            Item item = new Item();
+	            //item.setId(cursor.getLong(cursor.getColumnIndex(KEY_LIST_NAME)));
+	            item.setItemName(cursor.getString(cursor.getColumnIndex(KEY_ITEM_NAME)));
+	            item.setItemQuantity(cursor.getInt(cursor.getColumnIndex(KEY_ITEM_QUANTITY)));
+	            item.setItemUnit(cursor.getString(cursor.getColumnIndex(KEY_ITEM_UNIT)));
+	            item.setItemPrice(cursor.getInt(cursor.getColumnIndex(KEY_ITEM_PRICE)));
+	            item.setItemNote(cursor.getString(cursor.getColumnIndex(KEY_ITEM_NOTE)));
+	            item.setItemCategory(cursor.getString(cursor.getColumnIndex(KEY_ITEM_CATEGORY)));
+	            items.add(item);
+	            cursor.moveToNext();
+	        }
         }
-        /**
-         * Return the list. The indices of the cursor correspond to the
-         * selection when querying the database.
-         */
-        PantryList groceryList = new PantryList(cursor.getString(0));
         cursor.close();
         db.close();
-        return groceryList;
+        return items;
     }
 
     /**

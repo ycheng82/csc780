@@ -31,13 +31,19 @@ public class Item {
     private String itemUnit;
     private int itemPrice;
     private String itemNote;
+    private String itemCategory;
+    
+    public Item(){
+    	
+    }
 
-    public Item(String itemName, int itemQuantity, String itemUnit, int itemPrice, String itemNote) {
+    public Item(String itemName, int itemQuantity, String itemUnit, int itemPrice, String itemNote,String itemCategory) {
         this.setItemName(itemName);
         this.setItemQuantity(itemQuantity);
         this.setItemUnit(itemUnit);
         this.setItemPrice(itemPrice);
         this.setItemNote(itemNote);
+        this.setItemCategory(itemCategory);
     }
 
 	public String getItemName() {
@@ -78,5 +84,13 @@ public class Item {
 
 	public void setItemNote(String itemNote) {
 		this.itemNote = itemNote;
+	}
+
+	public String getItemCategory() {
+		return itemCategory;
+	}
+
+	public void setItemCategory(String itemCategory) {
+		this.itemCategory = itemCategory;
 	}
 }

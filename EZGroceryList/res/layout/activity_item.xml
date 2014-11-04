@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="ezgrocerylist.activity.ItemActivity" >
+
+    <TextView
+        android:id="@+id/lbUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/lbQuantity"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="71dp"
+        android:text="@string/label_unit" />
+
+    <Button
+        android:id="@+id/bMove"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/bDelete"
+        android:layout_alignBottom="@+id/bDelete"
+        android:layout_centerHorizontal="true"
+        android:text="@string/button_move" 
+        android:onClick="moveItem"/>
+
+    <Button
+        android:id="@+id/bDone"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lbUnit"
+        android:layout_alignTop="@+id/bMove"
+        android:layout_marginLeft="14dp"
+        android:text="@string/button_done" 
+        android:onClick="saveItem"/>
+
+    <Spinner
+        android:id="@+id/spUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lbUnit"
+        android:layout_below="@+id/lbUnit"
+        android:layout_marginTop="11dp" />
+
+    <Button
+        android:id="@+id/bDelete"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lbNote"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="40dp"
+        android:text="@string/button_delete" 
+        android:onClick="deleteItem"/>
+
+    <TextView
+        android:id="@+id/lbItemName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:text="@string/label_item_name" />
+
+    <EditText
+        android:id="@+id/etItemName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/lbItemName"
+        android:layout_alignBottom="@+id/lbItemName"
+        android:layout_alignRight="@+id/bDone"
+        android:ems="10"
+        android:inputType="none"
+        android:singleLine="true" >
+
+        <requestFocus />
+    </EditText>
+
+    <TextView
+        android:id="@+id/lbQuantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lbItemName"
+        android:layout_below="@+id/lbItemName"
+        android:layout_marginTop="15dp"
+        android:text="@string/label_quantity" />
+
+    <EditText
+        android:id="@+id/etNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bMove"
+        android:layout_alignLeft="@+id/bDelete"
+        android:layout_marginBottom="7dp"
+        android:ems="10"
+        android:inputType="textMultiLine" />
+
+    <TextView
+        android:id="@+id/lbNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/etNote"
+        android:layout_alignLeft="@+id/lbQuantity"
+        android:text="@string/label_note" />
+
+    <NumberPicker
+        android:id="@+id/npQuantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lbQuantity"
+        android:layout_alignTop="@+id/spUnit" />
+
+    <TextView
+        android:id="@+id/lbPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/npQuantity"
+        android:layout_below="@+id/npQuantity"
+        android:layout_marginTop="25dp"
+        android:text="@string/label_price" />
+
+    <TextView
+        android:id="@+id/lbDollar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/lbPrice"
+        android:layout_marginTop="12dp"
+        android:text="@string/label_dollar" />
+
+    <EditText
+        android:id="@+id/etPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/lbDollar"
+        android:layout_alignBottom="@+id/lbDollar"
+        android:layout_marginLeft="12dp"
+        android:layout_toLeftOf="@+id/etItemName"
+        android:layout_toRightOf="@+id/lbDollar"
+        android:ems="10"
+        android:inputType="numberDecimal" />
+
+    <TextView
+        android:id="@+id/lbCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/lbPrice"
+        android:layout_alignBottom="@+id/lbPrice"
+        android:layout_toLeftOf="@+id/spUnit"
+        android:text="@string/label_category" />
+
+    <Spinner
+        android:id="@+id/spCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/lbDollar"
+        android:layout_marginLeft="7dp"
+        android:layout_toRightOf="@+id/etNote" />
+
+</RelativeLayout>
