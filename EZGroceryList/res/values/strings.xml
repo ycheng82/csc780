@@ -6,6 +6,9 @@
     
     <string name="new_list">New List</string>
     
+    <string name="scan">Scan</string>
+    <string name="add_scan">Add</string>
+    
     <string name="pantry_screen">This is the pantry screen</string>
     <string name="infor_screen">This is the information screen</string>
     
@@ -16,6 +19,7 @@
 	<string name="label_price">Price</string>
 	<string name="label_dollar">$</string>
 	<string name="label_category">Category</string>
+	<string name="label_barcode">Barcode</string>
 	
 	<string name="button_delete">Delete</string>
 	<string name="button_move">Move</string>
@@ -29,6 +33,7 @@
     <string name="action_voice">Voice input</string>
     
 	<string-array name="pantry_menu">
+	    <item> </item>
 	    <item>New List</item>
 	    <item>Change Name</item>
 	    <item>Category</item>

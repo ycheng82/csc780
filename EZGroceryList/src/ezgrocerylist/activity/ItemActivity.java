@@ -1,7 +1,5 @@
 package ezgrocerylist.activity;
 
-import java.util.ArrayList;
-
 import com.ezgrocerylist.R;
 
 import ezgrocerylist.sql.DatabaseHandler;
@@ -26,7 +24,7 @@ import android.widget.NumberPicker.OnValueChangeListener;
 
 public class ItemActivity extends Activity {
 	NumberPicker npQuantity;
-	String listName;
+	String listName, barcode;
 	final static public String TAG = "storage";
 	
 	@Override
@@ -111,6 +109,10 @@ public class ItemActivity extends Activity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             listName = extras.getString("listname");
+            barcode = extras.getString("barcode");
+            if (barcode!=null){
+            	((EditText) findViewById(R.id.etBarcode)).setText(barcode);
+            }
         }
 
 
@@ -161,10 +163,11 @@ public class ItemActivity extends Activity {
         String itemName = ((EditText) findViewById(R.id.etItemName)).getText().toString();
         int itemQuantity = ((NumberPicker) findViewById(R.id.npQuantity)).getValue();
         String itemUnit = ((Spinner) findViewById(R.id.spUnit)).getSelectedItem().toString();
-        int itemPrice = Integer.parseInt(((EditText) findViewById(R.id.etPrice)).getText().toString());
+        float itemPrice = Float.parseFloat(((EditText) findViewById(R.id.etPrice)).getText().toString());
         String itemNote = ((EditText) findViewById(R.id.etNote)).getText().toString();
         String itemCategory = ((Spinner) findViewById(R.id.spCategory)).getSelectedItem().toString();
-        Item item = new Item(itemName,itemQuantity,itemUnit, itemPrice, itemNote, itemCategory);
+        String itemBarcode = ((EditText) findViewById(R.id.etBarcode)).getText().toString();
+        Item item = new Item(itemName,itemQuantity,itemUnit, itemPrice, itemNote, itemCategory,itemBarcode);
         db.addItem(listName,item);
         db.close();
         Intent intent = new Intent();

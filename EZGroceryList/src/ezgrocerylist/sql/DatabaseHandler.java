@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    private static final int    DATABASE_VERSION = 2;
+    private static final int    DATABASE_VERSION = 5;
 
     private static final String DATABASE_NAME = "EZgrocery";
 
@@ -24,6 +24,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_ITEM_PRICE = "itemPrice";
     private static final String KEY_ITEM_NOTE = "itemNote";
     private static final String KEY_ITEM_CATEGORY = "itemCategory";
+    private static final String KEY_ITEM_BARCODE = "itemBarcode";
     
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -33,8 +34,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String CREATE_TAGS_TABLE = "CREATE TABLE " + TABLE_ITEMS + "(" + KEY_LIST_NAME
                 + " TEXT NOT NULL," + KEY_ITEM_NAME  + " TEXT NOT NULL," + KEY_ITEM_QUANTITY 
-                + " INTEGER," + KEY_ITEM_UNIT + " TEXT," + KEY_ITEM_PRICE + " INTEGER," + 
-                KEY_ITEM_NOTE + " TEXT," + KEY_ITEM_CATEGORY + " TEXT" + ")";
+                + " INTEGER," + KEY_ITEM_UNIT + " TEXT," + KEY_ITEM_PRICE + " FLOAT," + 
+                KEY_ITEM_NOTE + " TEXT," + KEY_ITEM_CATEGORY + " TEXT," + KEY_ITEM_BARCODE +
+                " TEXT"+")";
         db.execSQL(CREATE_TAGS_TABLE);
     }
 
@@ -57,6 +59,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_ITEM_PRICE, item.getItemPrice());
         values.put(KEY_ITEM_NOTE, item.getItemNote());
         values.put(KEY_ITEM_CATEGORY, item.getItemCategory());
+        values.put(KEY_ITEM_BARCODE, item.getItemBarcode());
         db.insert(TABLE_ITEMS, null, values);
         db.close();
     }
@@ -69,7 +72,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<Item> items = new ArrayList<Item>();
         Cursor cursor = db.query(TABLE_ITEMS, new String[] { KEY_LIST_NAME, KEY_ITEM_NAME, KEY_ITEM_QUANTITY,
-        		KEY_ITEM_UNIT, KEY_ITEM_PRICE, KEY_ITEM_NOTE,  KEY_ITEM_CATEGORY}, KEY_LIST_NAME + "=?", 
+        		KEY_ITEM_UNIT, KEY_ITEM_PRICE, KEY_ITEM_NOTE,  KEY_ITEM_CATEGORY, KEY_ITEM_BARCODE}, KEY_LIST_NAME + "=?", 
         		new String[] { listName }, null, null, null, null);
         if(cursor != null && cursor.moveToFirst()) {
 	        while (cursor.isAfterLast() == false) {
@@ -79,9 +82,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	            item.setItemName(cursor.getString(cursor.getColumnIndex(KEY_ITEM_NAME)));
 	            item.setItemQuantity(cursor.getInt(cursor.getColumnIndex(KEY_ITEM_QUANTITY)));
 	            item.setItemUnit(cursor.getString(cursor.getColumnIndex(KEY_ITEM_UNIT)));
-	            item.setItemPrice(cursor.getInt(cursor.getColumnIndex(KEY_ITEM_PRICE)));
-	            item.setItemNote(cursor.getString(cursor.getColumnIndex(KEY_ITEM_NOTE)));
+	            item.setItemPrice(cursor.getFloat(cursor.getColumnIndex(KEY_ITEM_PRICE)));
 	            item.setItemCategory(cursor.getString(cursor.getColumnIndex(KEY_ITEM_CATEGORY)));
+	            item.setItemNote(cursor.getString(cursor.getColumnIndex(KEY_ITEM_NOTE)));
+	            item.setItemBarcode(cursor.getString(cursor.getColumnIndex(KEY_ITEM_BARCODE)));
+
 	            items.add(item);
 	            cursor.moveToNext();
 	        }
@@ -90,7 +95,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
         return items;
     }
-
+    
+    /**
+     * get the name of all the pantry lists in the database
+     * @return arraylist of list names
+     */
+    public ArrayList<String> getAllLists() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<String> names = new ArrayList<String>();
+        Cursor cursor = db.query(TABLE_ITEMS, new String[] { KEY_LIST_NAME}, null, null, null, null, null);
+        if(cursor != null && cursor.moveToFirst()) {
+	        while (cursor.isAfterLast() == false) {
+	            String name = cursor.getString(cursor.getColumnIndex(KEY_LIST_NAME));
+	            names.add(name);
+	            cursor.moveToNext();
+	        }
+        }
+        cursor.close();
+        db.close();
+        return names;
+    }
     /**
      * Count the number of employees currently stored in the database via the
      * SQL statement:
