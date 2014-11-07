@@ -24,7 +24,7 @@ import android.widget.NumberPicker.OnValueChangeListener;
 
 public class ItemActivity extends Activity {
 	NumberPicker npQuantity;
-	String listName, barcode;
+	String listName, barcode,itemName;
 	final static public String TAG = "storage";
 	
 	@Override
@@ -110,8 +110,12 @@ public class ItemActivity extends Activity {
         if (extras != null) {
             listName = extras.getString("listname");
             barcode = extras.getString("barcode");
+            itemName = extras.getString("itemname");
             if (barcode!=null){
             	((EditText) findViewById(R.id.etBarcode)).setText(barcode);
+            }
+            if (itemName!=null){
+            	((EditText) findViewById(R.id.etItemName)).setText(itemName);
             }
         }
 

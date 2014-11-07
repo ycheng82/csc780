@@ -139,6 +139,7 @@ public class PantryActivity extends ActionBarActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		
 	    // Handle presses on the action bar items
 	    switch (item.getItemId()) {
 	        case R.id.action_bar_code:
@@ -158,9 +159,22 @@ public class PantryActivity extends ActionBarActivity {
 	            return true;
 	        case R.id.action_email:
 	        	//actionName.setText("share by email");
+	        	Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+	        	emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "I want to share this list with you");
+
+	        	emailIntent.setType("plain/text");
+	        	String emailBody = "";
+	        			//(TextView) findViewById(R.id.pantry_action_name)
+	        	emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailBody);
+
+	        	startActivity(emailIntent);
+	        	
 	            return true;
 	        case R.id.action_voice:
 	        	//actionName.setText("voice input");
+	        	Intent voiceIntent = new Intent(this, VoiceActivity.class);
+	        	voiceIntent.putExtra("listname",listName);
+	        	startActivity(voiceIntent);
 	            return true;	            
 	        case R.id.action_settings:
 	        	//actionName.setText("setting");
@@ -177,7 +191,7 @@ public class PantryActivity extends ActionBarActivity {
 		LinearLayout childLayout = (LinearLayout) findViewById(R.id.layoutChild);
 		childLayout.removeAllViews();
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Change the name for the list");
+		builder.setTitle("Type the name for the list");
 
 		// Set up the input
 		final EditText input = new EditText(this);
@@ -295,17 +309,17 @@ public class PantryActivity extends ActionBarActivity {
 			
 			for (String value : uCats){
 				// create a new textview
-				TextView rowTextView = new TextView(this);
+				TextView listContents = new TextView(this);
 				String listText ="";
 				listText += value;
-				rowTextView.setBackgroundResource(R.drawable.pantry_textview_label);
-				rowTextView.setTextColor(Color.rgb(255,255,255));
+				listContents.setBackgroundResource(R.drawable.pantry_textview_label);
+				listContents.setTextColor(Color.rgb(255,255,255));
 				// set some properties of rowTextView or something
-				rowTextView.setText(listText);
+				listContents.setText(listText);
 				// add the textview to the linearlayout
-				childLayout.addView(rowTextView);
+				childLayout.addView(listContents);
 				
-				rowTextView = new TextView(this);
+				listContents = new TextView(this);
 				listText ="";
 				for (int j = 0; j < items.size();j++){
 					
@@ -316,11 +330,11 @@ public class PantryActivity extends ActionBarActivity {
 								items.get(j).getItemUnit()+ "\n";
 					}
 				}
-				rowTextView.setBackgroundResource(R.drawable.pantry_textview_back);
+				listContents.setBackgroundResource(R.drawable.pantry_textview_back);
 				// set some properties of rowTextView or something
-				rowTextView.setText(listText);
+				listContents.setText(listText);
 				// add the textview to the linearlayout
-				childLayout.addView(rowTextView);
+				childLayout.addView(listContents);
 			}
 		}
 
@@ -371,7 +385,7 @@ public class PantryActivity extends ActionBarActivity {
 		    //btnView.setTextColor(Color.rgb(255,255,255));
 		    //btnView.setBackgroundColor(Color.rgb(51,0,0));
 		    btnView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-
+		    listName = ((RadioButton)findViewById(rg.getCheckedRadioButtonId())).getText().toString();
 		    btnView.setOnClickListener(new View.OnClickListener() {
 		        public void onClick(View view) {
 		            listName = ((RadioButton)findViewById(rg.getCheckedRadioButtonId())).getText().toString();
