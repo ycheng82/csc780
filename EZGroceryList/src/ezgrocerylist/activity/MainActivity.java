@@ -204,9 +204,9 @@ public class MainActivity extends Activity implements OnItemSelectedListener,
 					startActivity(pantryIntent);
 					break;
 				case "Recipe List":
-					// Intent intent= new Intent(MainActivity.this,
-					// PantryActivity.class);
-					// startActivity(intent);
+					Intent recipeIntent = new Intent(MainActivity.this,
+							RecipeActivity.class);
+					startActivity(recipeIntent);
 					break;
 				case "Shopping List":
 					// Intent intent= new Intent(MainActivity.this,

@@ -44,12 +44,12 @@ import android.widget.ImageView;
  */
 @SuppressLint("NewApi")
 public class CircleLayout extends ViewGroup {
-	// Event listeners  监听事件
+	// Event listeners  
 	private OnItemClickListener mOnItemClickListener = null;
 	private OnItemSelectedListener mOnItemSelectedListener = null;
 	private OnCenterClickListener mOnCenterClickListener = null;
 	
-	// Background image  声明组件变量
+	// Background image 
 	private Bitmap imageOriginal, imageScaled;
 	private Matrix matrix;
 //	private ImageView center_image;
@@ -372,7 +372,7 @@ public class CircleLayout extends ViewGroup {
 	}
 
 	/**
-	 * @return The selected quadrant.象限
+	 * @return The selected quadrant.
 	 */
 	private static int getQuadrant(double x, double y) {
 		if (x >= 0) {

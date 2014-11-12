@@ -4,8 +4,10 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="19" />
-    
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="19" />
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -63,6 +65,24 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.Voice" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="ezgrocerylist.activity.PantryActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.Pantry" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="ezgrocerylist.activity.RecipeActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.Recipe" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

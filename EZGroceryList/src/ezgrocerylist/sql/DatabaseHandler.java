@@ -16,6 +16,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "EZgrocery";
 
     private static final String TABLE_ITEMS = "items";
+    private static final String TABLE_RECIPES = "recipes";
+    private static final String TABLE_STEPS = "steps";
 
     private static final String KEY_LIST_NAME = "listName";
     private static final String KEY_ITEM_NAME = "itemName";
@@ -26,18 +28,32 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_ITEM_CATEGORY = "itemCategory";
     private static final String KEY_ITEM_BARCODE = "itemBarcode";
     
+    private static final String KEY_RECIPE_NAME = "recipeName";
+    private static final String KEY_STEP_ID = "recipeId";
+    private static final String KEY_STEP = "recipeStep";
+    
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+    	//create item table
         String CREATE_TAGS_TABLE = "CREATE TABLE " + TABLE_ITEMS + "(" + KEY_LIST_NAME
                 + " TEXT NOT NULL," + KEY_ITEM_NAME  + " TEXT NOT NULL," + KEY_ITEM_QUANTITY 
                 + " INTEGER," + KEY_ITEM_UNIT + " TEXT," + KEY_ITEM_PRICE + " FLOAT," + 
                 KEY_ITEM_NOTE + " TEXT," + KEY_ITEM_CATEGORY + " TEXT," + KEY_ITEM_BARCODE +
                 " TEXT"+")";
         db.execSQL(CREATE_TAGS_TABLE);
+        String CREATE_TAGS_TABLE_RECIPE = "CREATE TABLE " + TABLE_RECIPES + "(" + KEY_RECIPE_NAME
+                + " TEXT NOT NULL," + KEY_ITEM_NAME  + " TEXT NOT NULL," + KEY_ITEM_QUANTITY 
+                + " INTEGER," + KEY_ITEM_UNIT + " TEXT," + 
+                KEY_ITEM_NOTE + " TEXT" +")";
+        db.execSQL(CREATE_TAGS_TABLE_RECIPE);
+        String CREATE_TAGS_TABLE_STEPS = "CREATE TABLE " + TABLE_STEPS + "("+
+        		KEY_RECIPE_NAME + " TEXT NOT NULL,"+ KEY_STEP_ID
+                + " INTEGER," + KEY_STEP  + " TEXT NOT NULL"+")";
+        db.execSQL(CREATE_TAGS_TABLE_STEPS);
     }
 
     @Override
@@ -115,6 +131,34 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
         return names;
     }
+    
+    /**
+     * change the list name in database (for all items included in that list)
+     * @param listName
+     * @return the number of rows affected 
+     */
+    public int changeListName(String oldListName, String newListName) {
+    	SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        //itemNewValues.put(ITEM_TYPE,menuItem.getType());
+        values.put(KEY_LIST_NAME,newListName);
+        String[] args = new String[1];
+        args[0]= oldListName;
+        return db.update(TABLE_ITEMS, values,KEY_LIST_NAME+"=?", args);
+    }
+    
+    /**
+     * remove all items in the database with the given list name
+     * @param listName
+     * @return
+     */
+    public int removeList(String listName) {
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	String[] args = new String[1];
+    	args[0]= listName;
+        return db.delete(TABLE_ITEMS, KEY_LIST_NAME+"=?", args);
+    }    
+    
     /**
      * Count the number of employees currently stored in the database via the
      * SQL statement:

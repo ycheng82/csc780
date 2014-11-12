@@ -15,7 +15,7 @@
           android:title="@string/action_bar_code"
           app:showAsAction="always" />
     <item android:id="@+id/action_text"
-          android:icon="@drawable/ic_text_white"
+          android:icon="@drawable/ic_textfield"
           android:title="@string/action_text"
           app:showAsAction="always" />
     <item android:id="@+id/action_email"
