@@ -63,7 +63,6 @@ public class MainActivity extends Activity implements OnItemSelectedListener,
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		// 创建一个BaseExpandableListAdapter对象
 
 		CircleLayout circleMenu = (CircleLayout) findViewById(R.id.main_circle_layout);
 		circleMenu.setOnItemSelectedListener(this);
@@ -84,7 +83,6 @@ public class MainActivity extends Activity implements OnItemSelectedListener,
 					{ "1", "2", "3", "4" }, { "1", "2", "3", "4" },
 					{ "1", "2", "3", "4" }, { "1", "2", "3", "4" }, };
 
-			// 获取指定组位置、指定子列表项处的子列表项数据
 			@Override
 			public Object getChild(int groupPosition, int childPosition) {
 				return arms[groupPosition][childPosition];
@@ -111,7 +109,6 @@ public class MainActivity extends Activity implements OnItemSelectedListener,
 				return textView;
 			}
 
-			// 该方法决定每个子选项的外观
 			@Override
 			public View getChildView(int groupPosition, int childPosition,
 					boolean isLastChild, View convertView, ViewGroup parent) {
@@ -128,7 +125,6 @@ public class MainActivity extends Activity implements OnItemSelectedListener,
 				return ll;
 			}
 
-			// 获取指定组位置处的组数据
 			@Override
 			public Object getGroup(int groupPosition) {
 				return armTypes[groupPosition];
@@ -144,7 +140,6 @@ public class MainActivity extends Activity implements OnItemSelectedListener,
 				return groupPosition;
 			}
 
-			// 该方法决定每个组选项的外观
 			@Override
 			public View getGroupView(int groupPosition, boolean isExpanded,
 					View convertView, ViewGroup parent) {

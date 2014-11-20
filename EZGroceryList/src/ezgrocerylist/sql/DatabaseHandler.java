@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    private static final int    DATABASE_VERSION = 5;
+    private static final int    DATABASE_VERSION = 6;
 
     private static final String DATABASE_NAME = "EZgrocery";
 
@@ -30,7 +30,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     
     private static final String KEY_RECIPE_NAME = "recipeName";
     private static final String KEY_STEP_ID = "recipeId";
-    private static final String KEY_STEP = "recipeStep";
+    private static final String KEY_STEP_DETAIL = "recipeStep";
     
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -38,21 +38,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-    	//create item table
+    	//create item table (store pantry item)
         String CREATE_TAGS_TABLE = "CREATE TABLE " + TABLE_ITEMS + "(" + KEY_LIST_NAME
                 + " TEXT NOT NULL," + KEY_ITEM_NAME  + " TEXT NOT NULL," + KEY_ITEM_QUANTITY 
                 + " INTEGER," + KEY_ITEM_UNIT + " TEXT," + KEY_ITEM_PRICE + " FLOAT," + 
                 KEY_ITEM_NOTE + " TEXT," + KEY_ITEM_CATEGORY + " TEXT," + KEY_ITEM_BARCODE +
                 " TEXT"+")";
         db.execSQL(CREATE_TAGS_TABLE);
+        //create recipe table (store recipe ingredients)
         String CREATE_TAGS_TABLE_RECIPE = "CREATE TABLE " + TABLE_RECIPES + "(" + KEY_RECIPE_NAME
                 + " TEXT NOT NULL," + KEY_ITEM_NAME  + " TEXT NOT NULL," + KEY_ITEM_QUANTITY 
                 + " INTEGER," + KEY_ITEM_UNIT + " TEXT," + 
                 KEY_ITEM_NOTE + " TEXT" +")";
         db.execSQL(CREATE_TAGS_TABLE_RECIPE);
+        //create recipe step table (store recipe steps)
         String CREATE_TAGS_TABLE_STEPS = "CREATE TABLE " + TABLE_STEPS + "("+
         		KEY_RECIPE_NAME + " TEXT NOT NULL,"+ KEY_STEP_ID
-                + " INTEGER," + KEY_STEP  + " TEXT NOT NULL"+")";
+                + " INTEGER," + KEY_STEP_DETAIL  + " TEXT NOT NULL"+")";
         db.execSQL(CREATE_TAGS_TABLE_STEPS);
     }
 
@@ -160,20 +162,55 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }    
     
     /**
-     * Count the number of employees currently stored in the database via the
-     * SQL statement:
-     * 
-     * <pre>
-     * SELECT * FROM employee
-     * </pre>
+     * Add a new recipe ingredient to the database.
      */
-    /*public int getEmployeeCount() {
-        String countQuery = "SELECT * FROM " + TABLE_EMPLOYEE;
+    public void addIngredient(String recipeName, Item item) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_RECIPE_NAME, recipeName);
+        values.put(KEY_ITEM_NAME, item.getItemName());
+        values.put(KEY_ITEM_QUANTITY, item.getItemQuantity());
+        values.put(KEY_ITEM_UNIT, item.getItemUnit());
+        values.put(KEY_ITEM_NOTE, item.getItemNote());
+        db.insert(TABLE_RECIPES, null, values);
+        db.close();
+    }
+    
+    /**
+     * Add recipe steps to the database.
+     */
+    public void addSteps(String recipeName, ArrayList<RecipeStep> step) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        for (int i = 0; i<step.size();i++){
+            values.put(KEY_RECIPE_NAME, recipeName);
+            values.put(KEY_STEP_ID,step.get(i).getStepId());
+            values.put(KEY_STEP_DETAIL,step.get(i).getStepDetail());
+        }
+        db.insert(TABLE_STEPS, null, values);
+        db.close();
+    }
+    
+    /**
+     * get the names of all recipes
+     * @return recipe names as an arraylist of string
+     */
+    public ArrayList<String> getRecipeList(){
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(countQuery, null);
-        int count = cursor.getCount();
+        ArrayList<String> names = new ArrayList<String>();
+        Cursor cursor = db.query(TABLE_RECIPES, new String[] { KEY_RECIPE_NAME}, null, null, null, null, null);
+        if(cursor != null && cursor.moveToFirst()) {
+	        while (cursor.isAfterLast() == false) {
+	            String name = cursor.getString(cursor.getColumnIndex(KEY_RECIPE_NAME));
+	            if (!names.contains(name)){
+	            	names.add(name);
+	            }
+	            cursor.moveToNext();
+	        }
+        }
         cursor.close();
         db.close();
-        return count;
-    }*/
+        return names;
+    }
+
 }

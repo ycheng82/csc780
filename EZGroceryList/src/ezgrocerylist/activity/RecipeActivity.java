@@ -217,16 +217,11 @@ public class RecipeActivity extends ActionBarActivity implements
 		case 0:
 			// add icon?
 			// help information?
-			fragment = new HomeFragment();
+			fragment = new HomeFragment("Recipe");
 			break;
 		case 1:
 			// open list, need fragment replacement
-			fragment = new ListFragment();
-			((ListFragment) fragment).setListNames(getAllLists());
-			((ListFragment) fragment).setListContents(getListContents());
-			// fragment = new NameFragment();
-			// ((NameFragment) fragment).setListNames(getAllLists());
-			// ((NameFragment) fragment).setListContents(getListContents());
+			fragment = new RecipeFragment();
 			break;
 		case 2:
 			// new list, no fragment replacement needed
@@ -376,7 +371,7 @@ public class RecipeActivity extends ActionBarActivity implements
 		// findViewById(R.id.layoutChild);
 		// childLayout.removeAllViews();
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Type the name for the list");
+		builder.setTitle("Type the name for the recipe");
 
 		// Set up the input
 		final EditText input = new EditText(this);
@@ -391,9 +386,8 @@ public class RecipeActivity extends ActionBarActivity implements
 			public void onClick(DialogInterface dialog, int which) {
 				listName = input.getText().toString();
 				Intent intent = new Intent(RecipeActivity.this,
-						ItemActivity.class);
-
-				intent.putExtra("listname", listName);
+						RecipeEditActivity.class);
+				intent.putExtra("recipename", listName);
 				startActivityForResult(intent, 0);
 			}
 		});

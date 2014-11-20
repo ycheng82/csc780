@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="ezgrocerylist.activity.ItemActivity" >
+
+    <TextView
+        android:id="@+id/lbUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/lbQuantity"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="71dp"
+        android:text="@string/label_unit" />
+
+    <Button
+        android:id="@+id/bMove"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/bDelete"
+        android:layout_alignBottom="@+id/bDelete"
+        android:layout_centerHorizontal="true"
+        android:onClick="moveItem"
+        android:text="@string/button_move" />
+
+    <Button
+        android:id="@+id/bDone"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lbUnit"
+        android:layout_alignTop="@+id/bMove"
+        android:layout_marginLeft="14dp"
+        android:onClick="saveItem"
+        android:text="@string/button_done" />
+
+    <Spinner
+        android:id="@+id/spUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lbUnit"
+        android:layout_below="@+id/lbUnit"
+        android:layout_marginTop="11dp" />
+
+    <TextView
+        android:id="@+id/lbItemName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:text="@string/label_item_name" />
+
+    <EditText
+        android:id="@+id/etItemName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/lbItemName"
+        android:layout_alignBottom="@+id/lbItemName"
+        android:layout_alignRight="@+id/bDone"
+        android:ems="10"
+        android:inputType="none"
+        android:singleLine="true" >
+
+        <requestFocus />
+    </EditText>
+
+    <TextView
+        android:id="@+id/lbQuantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lbItemName"
+        android:layout_below="@+id/lbItemName"
+        android:layout_marginTop="15dp"
+        android:text="@string/label_quantity" />
+
+    <NumberPicker
+        android:id="@+id/npQuantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lbQuantity"
+        android:layout_alignTop="@+id/spUnit" />
+
+    <Button
+        android:id="@+id/bDelete"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/etNote"
+        android:layout_alignParentBottom="true"
+        android:onClick="deleteItem"
+        android:text="@string/button_delete" />
+
+    <TextView
+        android:id="@+id/lbNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/npQuantity"
+        android:layout_below="@+id/npQuantity"
+        android:layout_marginTop="33dp"
+        android:text="@string/label_note" />
+
+    <EditText
+        android:id="@+id/etNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/lbUnit"
+        android:layout_below="@+id/lbNote"
+        android:ems="10"
+        android:inputType="textMultiLine" />
+
+</RelativeLayout>

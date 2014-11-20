@@ -22,6 +22,12 @@
     <string name="label_dollar">$</string>
     <string name="label_category">Category</string>
     <string name="label_barcode">Barcode</string>
+    <string name="label_add_ingredients">add your ingredients here</string>
+    <string name="label_add_steps">add your steps here</string>
+    <string name="label_add_images">add your images here</string>
+    <string name="label_ingredients">Ingredients</string>
+    <string name="label_steps">Steps</string>
+    <string name="label_images">Images</string>
     <string name="button_delete">Delete</string>
     <string name="button_move">Move</string>
     <string name="button_done">Done</string>

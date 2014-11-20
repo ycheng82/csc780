@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ImageButton
+        android:id="@+id/ibCamera"
+        android:layout_width="100dip"
+        android:layout_height="100dip"
+        android:layout_gravity="center" 
+        android:background="@drawable/ic_camera"
+        android:onClick="addCover" />
+
+    <TextView
+        android:id="@+id/lbRecipeName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:background="@android:color/transparent"
+        android:text="recipename"
+        android:textColor="@color/recipename_text"
+        android:textSize="25sp" />
+
+    <TextView
+        android:id="@+id/lbIngredients"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="50dp"
+        android:background="@android:color/transparent"
+        android:text="@string/label_ingredients"
+        android:textColor="@color/recipename_text"
+        android:textSize="25sp" />
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        
+        <ImageButton
+            android:id="@+id/ibIngredientsPlus"
+            android:layout_width="25dip"
+            android:layout_height="25dip"
+            android:layout_marginLeft="20dp"
+            android:layout_gravity="center" 
+            android:background="@drawable/ic_plus" 
+            android:onClick="addIngredients" />
+
+        <TextView
+            android:id="@+id/lbAddIngredients"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/transparent"
+            android:text="@string/label_add_ingredients"
+            android:textColor="@color/recipename_add_text"
+            android:textSize="20sp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/layout_ingredients"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/lbSteps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="50dp"
+        android:background="@android:color/transparent"
+        android:text="@string/label_steps"
+        android:textColor="@color/recipename_text"
+        android:textSize="25sp" />
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        
+        <ImageButton
+            android:id="@+id/ibStepsPlus"
+            android:layout_width="25dip"
+            android:layout_height="25dip"
+            android:layout_marginLeft="20dp"
+            android:layout_gravity="center" 
+            android:background="@drawable/ic_plus" 
+            android:onClick="addSteps" />
+
+        <TextView
+            android:id="@+id/lbAddSteps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/transparent"
+            android:text="@string/label_add_steps"
+            android:textColor="@color/recipename_add_text"
+            android:textSize="20sp" />
+
+
+    </LinearLayout>
+    
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/layout_steps"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/lbImages"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="50dp"
+        android:background="@android:color/transparent"
+        android:text="@string/label_images"
+        android:textColor="@color/recipename_text"
+        android:textSize="25sp" />
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        
+        <ImageButton
+            android:id="@+id/ibImagePlus"
+            android:layout_width="25dip"
+            android:layout_height="25dip"
+            android:layout_marginLeft="20dp"
+            android:layout_gravity="center" 
+            android:background="@drawable/ic_plus" 
+            android:onClick="addImages" />
+
+        <TextView
+            android:id="@+id/lbAddImages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/transparent"
+            android:text="@string/label_add_images"
+            android:textColor="@color/recipename_add_text"
+            android:textSize="20sp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/layout_images"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+    </LinearLayout>
+
+</LinearLayout>

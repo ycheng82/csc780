@@ -221,7 +221,7 @@ public class PantryActivity extends ActionBarActivity implements
 		case 0:
 			// add icon?
 			// help information?
-			fragment = new HomeFragment();
+			fragment = new HomeFragment("Pantry");
 			break;
 		case 1:
 			// open list, need fragment replacement
@@ -454,7 +454,8 @@ public class PantryActivity extends ActionBarActivity implements
 
 	public void removeList() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("You are going to delete " + listName + ". Are you sure?");
+		builder.setTitle("You are going to delete " + listName
+				+ ". Are you sure?");
 
 		// Set up the buttons
 		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {

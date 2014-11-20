@@ -13,8 +13,9 @@ import com.ezgrocerylist.R;
 public class HomeFragment extends Fragment {
 		View rootView;
 		TextView tv;
-		public HomeFragment() {
-
+		String screenName;
+		public HomeFragment(String screenName) {
+			this.screenName = screenName;
 		}
 		
 		public void onCreate(Bundle savedInstanceState) {
@@ -33,7 +34,7 @@ public class HomeFragment extends Fragment {
 			super.onViewCreated(view, savedInstanceState);
 			//tv = (TextView) view.findViewById(R.id.tv_pantry_home);
 			//tv.setText("This is My Pantry List" + "\n"+ "Click the icon above to open a list");
-			Toast.makeText(getActivity(),"This is My Pantry List" + "\n"+ "Click the icon above to open a list",Toast.LENGTH_LONG).show();
+			Toast.makeText(getActivity(),"This is My "+ screenName+" List" + "\n"+ "Click the icon above to open a list",Toast.LENGTH_LONG).show();
 			  
 		}
 }
