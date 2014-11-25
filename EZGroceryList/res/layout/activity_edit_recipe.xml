@@ -6,8 +6,8 @@
 
     <ImageButton
         android:id="@+id/ibCamera"
-        android:layout_width="100dip"
-        android:layout_height="100dip"
+        android:layout_width="@dimen/ibCamera_width"
+        android:layout_height="@dimen/ibCamera_height"
         android:layout_gravity="center" 
         android:background="@drawable/ic_camera"
         android:onClick="addCover" />
@@ -32,7 +32,15 @@
         android:text="@string/label_ingredients"
         android:textColor="@color/recipename_text"
         android:textSize="25sp" />
-
+    
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/layout_ingredients"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+    </LinearLayout>
+    
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -62,13 +70,7 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/layout_ingredients"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
-    </LinearLayout>
+
     
     <TextView
         android:id="@+id/lbSteps"

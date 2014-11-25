@@ -385,10 +385,13 @@ public class RecipeActivity extends ActionBarActivity implements
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				listName = input.getText().toString();
-				Intent intent = new Intent(RecipeActivity.this,
-						RecipeEditActivity.class);
+				//Intent intent = new Intent(RecipeActivity.this,RecipeEditActivity.class);
+				//intent.putExtra("recipename", listName);
+				//startActivityForResult(intent, 0);
+				Intent intent = new Intent (RecipeActivity.this, EditRecipeActivity.class);
 				intent.putExtra("recipename", listName);
-				startActivityForResult(intent, 0);
+				startActivity(intent);
+				
 			}
 		});
 		builder.setNegativeButton("Cancel",

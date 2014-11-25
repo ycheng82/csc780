@@ -10,5 +10,6 @@
     <color name="recipename_text">#1F1F2E</color>
     <color name="recipename_add_text">#999999</color>
     <color name="recipename_bg">#ffffff</color>
+    <color name="ingredient_btn">#FFFFFF</color>
 
 </resources>

@@ -30,6 +30,10 @@ public class RecipeFragment extends ListFragment {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		//call recipe editing 
-		
+		String listName = (String) getListAdapter().getItem(position);
+		//Intent intent = new Intent(this.getActivity(),RecipeEditActivity.class);
+		Intent intent = new Intent(this.getActivity(),EditRecipeActivity.class);
+		intent.putExtra("recipename", listName);
+		startActivity(intent);
 	}
 }
