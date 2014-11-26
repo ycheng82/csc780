@@ -60,11 +60,11 @@ public class EditRecipeActivity extends FragmentActivity implements
 	private static String recipeName;
 	private Intent pictureActionIntent = null;
 	protected static final int GALLERY_PICTURE = 1;
-	static Bitmap bitmap;
-	String selectedImagePath;
-	String mCurrentPhotoPath;
+	private static Bitmap bitmap;
+	private String selectedImagePath;
+	private String mCurrentPhotoPath;
 	protected static final int REQUEST_TAKE_PHOTO = 0;
-	File photoFile = null;
+	private File photoFile = null;
 	private static View rootView;
 
 	public void onCreate(Bundle savedInstanceState) {
@@ -191,22 +191,22 @@ public class EditRecipeActivity extends FragmentActivity implements
 		public Fragment getItem(int i) {
 			switch (i) {
 			case 0:
-				// The first section of the app is the most interesting -- it
-				// offers
-				// a launchpad into the other demonstrations in this example
-				// application.
+				// show intro fragment
 				LaunchpadSectionFragment launchpadSectionFragment = new LaunchpadSectionFragment();
 				launchpadSectionFragment.setRecipeName(recipeName);
 				return launchpadSectionFragment;
 			
 			case 1:
-				// The first section of the app is the most interesting -- it
-				// offers
-				// a launchpad into the other demonstrations in this example
-				// application.
+				// show ingredient fragment
 				IngredientsFragment ingredientsFragment = new IngredientsFragment();
 				ingredientsFragment.setRecipeName(recipeName);
 				return ingredientsFragment;
+				
+			case 2:
+				// show step fragment
+				StepsFragment stepsFragment = new StepsFragment();
+				stepsFragment.setRecipeName(recipeName);
+				return stepsFragment;
 
 			default:
 				// The other sections of the app are dummy placeholders.

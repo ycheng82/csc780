@@ -21,6 +21,11 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.NumberPicker.OnValueChangeListener;
 
+/**
+ * activity to edit a recipe ingredient
+ * @author Ye
+ *
+ */
 public class IngredientActivity extends Activity {
 	NumberPicker npQuantity;
 	String recipeName, itemName;

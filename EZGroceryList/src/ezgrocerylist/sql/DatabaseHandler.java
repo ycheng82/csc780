@@ -11,7 +11,7 @@ import android.net.Uri;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-	private static final int DATABASE_VERSION = 15;
+	private static final int DATABASE_VERSION = 17;
 
 	private static final String DATABASE_NAME = "EZgrocery";
 
@@ -32,8 +32,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String KEY_RECIPE_NAME = "recipeName";
 	private static final String KEY_RECIPE_COVER = "recipeCover";
 	private static final String KEY_RECIPE_IMAGE = "recipeImage";
-	private static final String KEY_STEP_ID = "recipeId";
-	private static final String KEY_STEP_DETAIL = "recipeStep";
+	private static final String KEY_STEP_ID = "stepId";
+	private static final String KEY_STEP_DETAIL = "stepDetail";
 
 	public DatabaseHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -52,8 +52,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		// create recipe table (store recipe ingredients)
 		String CREATE_TAGS_TABLE_RECIPE = "CREATE TABLE " + TABLE_RECIPES + "("
 				+ KEY_RECIPE_NAME + " TEXT NOT NULL," + KEY_ITEM_NAME
-				+ " TEXT," + KEY_ITEM_QUANTITY + " INTEGER,"
-				+ KEY_ITEM_UNIT + " TEXT," + KEY_ITEM_NOTE + " TEXT"+")";
+				+ " TEXT," + KEY_ITEM_QUANTITY + " INTEGER," + KEY_ITEM_UNIT
+				+ " TEXT," + KEY_ITEM_NOTE + " TEXT" + ")";
 		db.execSQL(CREATE_TAGS_TABLE_RECIPE);
 		// create recipe step table (store recipe steps)
 		String CREATE_TAGS_TABLE_STEPS = "CREATE TABLE " + TABLE_STEPS + "("
@@ -62,8 +62,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.execSQL(CREATE_TAGS_TABLE_STEPS);
 		// create recipe image table (store recipe images)
 		String CREATE_TAGS_TABLE_IMAGES = "CREATE TABLE " + TABLE_IMAGES + "("
-				+ KEY_RECIPE_NAME + " TEXT NOT NULL," + KEY_RECIPE_COVER + " INTEGER,"  
-				+ KEY_RECIPE_IMAGE + " TEXT"+ ")";
+				+ KEY_RECIPE_NAME + " TEXT NOT NULL," + KEY_RECIPE_COVER
+				+ " INTEGER," + KEY_RECIPE_IMAGE + " TEXT" + ")";
 		db.execSQL(CREATE_TAGS_TABLE_IMAGES);
 	}
 
@@ -189,15 +189,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	/**
 	 * Add a new recipe ingredient to the database.
-	 * @return 
+	 * 
+	 * @return
 	 */
 	public int addIngredient(String recipeName, Item item) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
-		Cursor cursor = db.query(TABLE_RECIPES, new String[] { KEY_RECIPE_NAME,
-				KEY_ITEM_NAME, KEY_ITEM_QUANTITY ,KEY_ITEM_UNIT,KEY_ITEM_NOTE}, 
-				KEY_RECIPE_NAME + "=?"+ " AND " + KEY_ITEM_NAME + "=?",
-				new String[] { recipeName ,item.getItemName()}, null, null, null, null);
+		Cursor cursor = db.query(TABLE_RECIPES,
+				new String[] { KEY_RECIPE_NAME, KEY_ITEM_NAME,
+						KEY_ITEM_QUANTITY, KEY_ITEM_UNIT, KEY_ITEM_NOTE },
+				KEY_RECIPE_NAME + "=?" + " AND " + KEY_ITEM_NAME + "=?",
+				new String[] { recipeName, item.getItemName() }, null, null,
+				null, null);
 		if (cursor.moveToFirst()) {
 			// record exists
 
@@ -208,8 +211,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			values.put(KEY_ITEM_NOTE, item.getItemNote());
 			String[] args = new String[1];
 			args[0] = recipeName;
-			return db.update(TABLE_RECIPES, values, KEY_RECIPE_NAME + "=?"+ " AND " + KEY_ITEM_NAME + "=?",
-					new String[] { recipeName ,item.getItemName()});
+			return db.update(TABLE_RECIPES, values, KEY_RECIPE_NAME + "=?"
+					+ " AND " + KEY_ITEM_NAME + "=?", new String[] {
+					recipeName, item.getItemName() });
 		} else {
 			// record not found
 			values.put(KEY_RECIPE_NAME, recipeName);
@@ -224,18 +228,38 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	}
 
 	/**
-	 * Add recipe steps to the database.
+	 * Add recipe step to the database.
+	 * @return 
 	 */
-	public void addSteps(String recipeName, ArrayList<RecipeStep> step) {
+	public int addStep(String recipeName, Step step) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
-		for (int i = 0; i < step.size(); i++) {
+		Cursor cursor = db.query(TABLE_STEPS,
+				new String[] { KEY_RECIPE_NAME, KEY_STEP_ID,
+						KEY_STEP_DETAIL},
+				KEY_RECIPE_NAME + "=?" + " AND " + KEY_STEP_ID + "=?",
+				new String[] { recipeName, Integer.toString(step.getStepId()) }, null, null,
+				null, null);
+		if (cursor.moveToFirst()) {
+			// record exists
 			values.put(KEY_RECIPE_NAME, recipeName);
-			values.put(KEY_STEP_ID, step.get(i).getStepId());
-			values.put(KEY_STEP_DETAIL, step.get(i).getStepDetail());
+			values.put(KEY_STEP_ID, step.getStepId());
+			values.put(KEY_STEP_DETAIL, step.getStepDetail());
+			String[] args = new String[1];
+			args[0] = recipeName;
+			return db.update(TABLE_STEPS, values, KEY_RECIPE_NAME + "=?"
+					+ " AND " + KEY_STEP_ID + "=?", new String[] {
+					recipeName, Integer.toString(step.getStepId()) });
+		} else {
+			// record not found
+			values.put(KEY_RECIPE_NAME, recipeName);
+			values.put(KEY_STEP_ID, step.getStepId());
+			values.put(KEY_STEP_DETAIL, step.getStepDetail());
+			db.insert(TABLE_STEPS, null, values);
+			db.close();
+			return 1;
 		}
-		db.insert(TABLE_STEPS, null, values);
-		db.close();
+
 	}
 
 	/**
@@ -246,7 +270,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public ArrayList<String> getRecipeList() {
 		SQLiteDatabase db = this.getReadableDatabase();
 		ArrayList<String> names = new ArrayList<String>();
-		//check recipe item table
+		// check recipe item table
 		Cursor cursor = db.query(TABLE_RECIPES,
 				new String[] { KEY_RECIPE_NAME }, null, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
@@ -259,9 +283,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				cursor.moveToNext();
 			}
 		}
-		//check recipe image table
-		cursor = db.query(TABLE_IMAGES,
-				new String[] { KEY_RECIPE_NAME }, null, null, null, null, null);
+		// check recipe image table
+		cursor = db.query(TABLE_IMAGES, new String[] { KEY_RECIPE_NAME }, null,
+				null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			while (cursor.isAfterLast() == false) {
 				String name = cursor.getString(cursor
@@ -285,7 +309,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		String Query = "SELECT * FROM " + TABLE_RECIPES + " WHERE "
-				+ KEY_RECIPE_NAME + " = '" + recipeName+"'";
+				+ KEY_RECIPE_NAME + " = '" + recipeName + "'";
 		Cursor cursor = db.rawQuery(Query, null);
 		if (cursor.moveToFirst()) {
 			// record exists
@@ -305,16 +329,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		}
 	}
-	
+
 	/**
 	 * get recipes from database
+	 * 
 	 * @param recipeName
 	 * @return true if recipe exists, false if not
 	 */
-	public boolean getRecipe(String recipeName){
+	public boolean getRecipe(String recipeName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		String Query = "SELECT * FROM " + TABLE_RECIPES + " WHERE "
-				+ KEY_RECIPE_NAME + " = '" + recipeName+"'";
+				+ KEY_RECIPE_NAME + " = '" + recipeName + "'";
 		Cursor cursor = db.rawQuery(Query, null);
 		if (cursor.moveToFirst()) {
 			// record exists
@@ -323,11 +348,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			return false;
 		}
 	}
-	
-	public Uri getCover(String recipeName){
+
+	public Uri getCover(String recipeName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		String Query = "SELECT * FROM " + TABLE_RECIPES + " WHERE "
-				+ KEY_RECIPE_NAME + " = '" + recipeName+"'";
+				+ KEY_RECIPE_NAME + " = '" + recipeName + "'";
 		Cursor cursor = db.rawQuery(Query, null);
 		if (cursor.moveToFirst()) {
 			// record exists
@@ -337,11 +362,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Add recipe cover image to the database.Check if a recipe exists, if yes,
 	 * update cover else, add recipe and cover to database
-	 * @param isCover 0:not cover image, 1: is cover image
+	 * 
+	 * @param isCover
+	 *            0:not cover image, 1: is cover image
 	 * @param recipeName
 	 * @param imageUri
 	 * @return
@@ -350,7 +377,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		String Query = "SELECT * FROM " + TABLE_IMAGES + " WHERE "
-				+ KEY_RECIPE_NAME + " = '" + recipeName+"'";
+				+ KEY_RECIPE_NAME + " = '" + recipeName + "'";
 		Cursor cursor = db.rawQuery(Query, null);
 		if (cursor.moveToFirst()) {
 			// record exists
@@ -358,8 +385,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			values.put(KEY_RECIPE_IMAGE, imageUri);
 			String[] args = new String[1];
 			args[0] = recipeName;
-			return db.update(TABLE_IMAGES, values, KEY_RECIPE_NAME + "=?",
-					args);
+			return db
+					.update(TABLE_IMAGES, values, KEY_RECIPE_NAME + "=?", args);
 		} else {
 			// record not found
 			values.put(KEY_RECIPE_NAME, recipeName);
@@ -371,25 +398,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		}
 	}
-	public Uri getCoverImage(String recipeName){
+
+	public Uri getCoverImage(String recipeName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		String Query = "SELECT * FROM " + TABLE_IMAGES + " WHERE "
-				+ KEY_RECIPE_NAME + " = '" + recipeName+"'";
+				+ KEY_RECIPE_NAME + " = '" + recipeName + "'";
 		Cursor cursor = db.rawQuery(Query, null);
 		if (cursor.moveToFirst()) {
-			if(cursor.getInt(cursor.getColumnIndex(KEY_RECIPE_COVER))==1){
+			if (cursor.getInt(cursor.getColumnIndex(KEY_RECIPE_COVER)) == 1) {
 				// record exists
 				return Uri.parse(cursor.getString(cursor
 						.getColumnIndex(KEY_RECIPE_IMAGE)));
 			}
-			
-		} 
-		else {
+
+		} else {
 			return null;
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Searches the database for the items in a given pantry list.
 	 * 
@@ -397,10 +424,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public ArrayList<Item> getIngredients(String recipeName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		ArrayList<Item> items = new ArrayList<Item>();
-		Cursor cursor = db.query(TABLE_RECIPES, new String[] { KEY_RECIPE_NAME,
-				KEY_ITEM_NAME, KEY_ITEM_QUANTITY ,KEY_ITEM_UNIT,KEY_ITEM_NOTE}, 
-				KEY_RECIPE_NAME + "=?",
-				new String[] { recipeName }, null, null, null, null);
+		Cursor cursor = db.query(TABLE_RECIPES,
+				new String[] { KEY_RECIPE_NAME, KEY_ITEM_NAME,
+						KEY_ITEM_QUANTITY, KEY_ITEM_UNIT, KEY_ITEM_NOTE },
+				KEY_RECIPE_NAME + "=?", new String[] { recipeName }, null,
+				null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			while (cursor.isAfterLast() == false) {
 				// Calllog is a class with list of fileds
@@ -423,37 +451,112 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.close();
 		return items;
 	}
-	
+
 	/**
 	 * get an ingredient from database
+	 * 
 	 * @param recipeName
 	 * @param itemName
 	 * @return item
 	 */
-	public Item getIngredient(String recipeName,String itemName){
+	public Item getIngredient(String recipeName, String itemName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		Item item = new Item();
-		Cursor cursor = db.query(TABLE_RECIPES, new String[] { KEY_RECIPE_NAME,
-				KEY_ITEM_NAME, KEY_ITEM_QUANTITY ,KEY_ITEM_UNIT,KEY_ITEM_NOTE}, 
-				KEY_RECIPE_NAME + "=?"+ " AND " + KEY_ITEM_NAME + "=?",
-				new String[] { recipeName ,itemName}, null, null, null);
+		Cursor cursor = db.query(TABLE_RECIPES,
+				new String[] { KEY_RECIPE_NAME, KEY_ITEM_NAME,
+						KEY_ITEM_QUANTITY, KEY_ITEM_UNIT, KEY_ITEM_NOTE },
+				KEY_RECIPE_NAME + "=?" + " AND " + KEY_ITEM_NAME + "=?",
+				new String[] { recipeName, itemName }, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
-				item.setItemName(cursor.getString(cursor
-						.getColumnIndex(KEY_ITEM_NAME)));
-				item.setItemQuantity(cursor.getInt(cursor
-						.getColumnIndex(KEY_ITEM_QUANTITY)));
-				item.setItemUnit(cursor.getString(cursor
-						.getColumnIndex(KEY_ITEM_UNIT)));
-				item.setItemNote(cursor.getString(cursor
-						.getColumnIndex(KEY_ITEM_NOTE)));
+			item.setItemName(cursor.getString(cursor
+					.getColumnIndex(KEY_ITEM_NAME)));
+			item.setItemQuantity(cursor.getInt(cursor
+					.getColumnIndex(KEY_ITEM_QUANTITY)));
+			item.setItemUnit(cursor.getString(cursor
+					.getColumnIndex(KEY_ITEM_UNIT)));
+			item.setItemNote(cursor.getString(cursor
+					.getColumnIndex(KEY_ITEM_NOTE)));
 		}
 		cursor.close();
 		db.close();
 		return item;
 	}
-	public boolean deleteIngredient(String recipeName,String itemName){
+
+	/**
+	 * delete an ingredient from recipe database
+	 * 
+	 * @param recipeName
+	 * @param itemName
+	 * @return true if deleted, false if not deleted
+	 */
+	public boolean deleteIngredient(String recipeName, String itemName) {
 		SQLiteDatabase db = this.getReadableDatabase();
-		return db.delete(TABLE_RECIPES, KEY_RECIPE_NAME + "=?"+ " AND " + KEY_ITEM_NAME + "=?",
-				new String[] { recipeName ,itemName}) > 0;
+		return db.delete(TABLE_RECIPES, KEY_RECIPE_NAME + "=?" + " AND "
+				+ KEY_ITEM_NAME + "=?", new String[] { recipeName, itemName }) > 0;
+	}
+
+	/**
+	 * Searches the database for the recipe steps in a given recipe.
+	 * 
+	 */
+	public ArrayList<Step> getSteps(String recipeName) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		ArrayList<Step> steps = new ArrayList<Step>();
+		Cursor cursor = db.query(TABLE_STEPS,
+				new String[] { KEY_RECIPE_NAME, KEY_STEP_ID,
+						KEY_STEP_DETAIL },
+				KEY_RECIPE_NAME + "=?", new String[] { recipeName }, null,
+				null, null, null);
+		if (cursor != null && cursor.moveToFirst()) {
+			while (cursor.isAfterLast() == false) {
+				// Calllog is a class with list of fileds
+				Step step = new Step();
+				// item.setId(cursor.getLong(cursor.getColumnIndex(KEY_LIST_NAME)));
+				step.setStepId(cursor.getInt(cursor.getColumnIndex(KEY_STEP_ID)));
+				step.setStepDetail(cursor.getString(cursor
+						.getColumnIndex(KEY_STEP_DETAIL)));
+				steps.add(step);
+				cursor.moveToNext();
+			}
+		}
+		cursor.close();
+		db.close();
+		return steps;
+	}
+
+	/**
+	 * get a recipe step from database
+	 * 
+	 * @param recipeName
+	 * @param stepId
+	 * @return item
+	 */
+	public Step getStep(String recipeName, int stepId) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		Step step = new Step();
+		Cursor cursor = db.query(TABLE_STEPS, new String[] { KEY_RECIPE_NAME,
+				KEY_STEP_ID, KEY_STEP_DETAIL }, KEY_RECIPE_NAME + "=?"
+				+ " AND " + KEY_STEP_ID + "=?", new String[] { recipeName,
+				Integer.toString(stepId) }, null, null, null);
+		if (cursor != null && cursor.moveToFirst()) {
+			step.setStepId(cursor.getInt(cursor.getColumnIndex(KEY_STEP_ID)));
+			step.setStepDetail(cursor.getString(cursor
+					.getColumnIndex(KEY_STEP_DETAIL)));
+		}
+		cursor.close();
+		db.close();
+		return step;
+	}
+	/**
+	 * delete a recipe step from recipe database
+	 * 
+	 * @param recipeName
+	 * @param stepId
+	 * @return true if deleted, false if not deleted
+	 */
+	public boolean deleteStep(String recipeName, int stepId) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		return db.delete(TABLE_STEPS, KEY_RECIPE_NAME + "=?" + " AND "
+				+ KEY_STEP_ID + "=?", new String[] { recipeName, Integer.toString(stepId) }) > 0;
 	}
 }

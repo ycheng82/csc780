@@ -120,7 +120,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-         <activity
+        <activity
             android:name="ezgrocerylist.activity.CollectionActivity"
             android:label="@string/app_name" >
             <intent-filter>
@@ -129,6 +129,15 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        </application>
+        <activity
+            android:name="ezgrocerylist.activity.StepActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.StepEdit" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+    </application>
 
 </manifest>
