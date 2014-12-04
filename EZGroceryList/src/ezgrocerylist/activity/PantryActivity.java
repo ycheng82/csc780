@@ -374,6 +374,7 @@ public class PantryActivity extends ActionBarActivity implements
 				listName = input.getText().toString();
 				Intent intent = new Intent(PantryActivity.this,
 						ItemActivity.class);
+				intent.putExtra("type","pantry");
 
 				intent.putExtra("listname", listName);
 				startActivityForResult(intent, 0);

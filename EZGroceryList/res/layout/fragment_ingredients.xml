@@ -27,7 +27,7 @@
                 android:layout_height="25dip"
                 android:layout_gravity="center"
                 android:layout_marginLeft="20dp"
-                android:background="@drawable/ic_plus"/>
+                android:background="@drawable/ic_plus" />
 
             <TextView
                 android:id="@+id/lbAddIngredients"
@@ -40,6 +40,14 @@
                 android:textColor="@color/recipename_add_text"
                 android:textSize="15sp" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/bt_shopping"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="40dp"
+            android:text="@string/label_shop_item" />
     </LinearLayout>
 
 </FrameLayout>

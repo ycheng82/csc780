@@ -115,4 +115,20 @@
         android:ems="10"
         android:inputType="textMultiLine" />
 
+    <TextView
+        android:id="@+id/lbCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/spUnit"
+        android:layout_below="@+id/spUnit"
+        android:layout_marginTop="17dp"
+        android:text="@string/label_category" />
+
+    <Spinner
+        android:id="@+id/spCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lbCategory"
+        android:layout_below="@+id/lbCategory" />
+
 </RelativeLayout>

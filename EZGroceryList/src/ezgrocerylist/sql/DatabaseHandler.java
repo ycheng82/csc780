@@ -13,7 +13,7 @@ import android.net.Uri;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-	private static final int DATABASE_VERSION = 19;
+	private static final int DATABASE_VERSION = 20;
 
 	private static final String DATABASE_NAME = "EZgrocery";
 
@@ -58,7 +58,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		String CREATE_TAGS_TABLE_RECIPE = "CREATE TABLE " + TABLE_RECIPES + "("
 				+ KEY_RECIPE_NAME + " TEXT NOT NULL," + KEY_ITEM_NAME
 				+ " TEXT," + KEY_ITEM_QUANTITY + " INTEGER," + KEY_ITEM_UNIT
-				+ " TEXT," + KEY_ITEM_NOTE + " TEXT" + ")";
+				+ " TEXT," + KEY_ITEM_NOTE + " TEXT," + KEY_ITEM_CATEGORY + " TEXT" + ")";
 		db.execSQL(CREATE_TAGS_TABLE_RECIPE);
 		// create recipe step table (store recipe steps)
 		String CREATE_TAGS_TABLE_STEPS = "CREATE TABLE " + TABLE_STEPS + "("
@@ -237,7 +237,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		ContentValues values = new ContentValues();
 		Cursor cursor = db.query(TABLE_RECIPES,
 				new String[] { KEY_RECIPE_NAME, KEY_ITEM_NAME,
-						KEY_ITEM_QUANTITY, KEY_ITEM_UNIT, KEY_ITEM_NOTE },
+						KEY_ITEM_QUANTITY, KEY_ITEM_UNIT, KEY_ITEM_NOTE,KEY_ITEM_CATEGORY },
 				KEY_RECIPE_NAME + "=?" + " AND " + KEY_ITEM_NAME + "=?",
 				new String[] { recipeName, item.getItemName() }, null, null,
 				null, null);
@@ -249,6 +249,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			values.put(KEY_ITEM_QUANTITY, item.getItemQuantity());
 			values.put(KEY_ITEM_UNIT, item.getItemUnit());
 			values.put(KEY_ITEM_NOTE, item.getItemNote());
+			values.put(KEY_ITEM_CATEGORY, item.getItemCategory());
 			String[] args = new String[1];
 			args[0] = recipeName;
 			return db.update(TABLE_RECIPES, values, KEY_RECIPE_NAME + "=?"
@@ -261,6 +262,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			values.put(KEY_ITEM_QUANTITY, item.getItemQuantity());
 			values.put(KEY_ITEM_UNIT, item.getItemUnit());
 			values.put(KEY_ITEM_NOTE, item.getItemNote());
+			values.put(KEY_ITEM_CATEGORY, item.getItemCategory());
 			db.insert(TABLE_RECIPES, null, values);
 			db.close();
 			return 1;
@@ -465,7 +467,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		ArrayList<Item> items = new ArrayList<Item>();
 		Cursor cursor = db.query(TABLE_RECIPES,
 				new String[] { KEY_RECIPE_NAME, KEY_ITEM_NAME,
-						KEY_ITEM_QUANTITY, KEY_ITEM_UNIT, KEY_ITEM_NOTE },
+						KEY_ITEM_QUANTITY, KEY_ITEM_UNIT, KEY_ITEM_NOTE,KEY_ITEM_CATEGORY },
 				KEY_RECIPE_NAME + "=?", new String[] { recipeName }, null,
 				null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
@@ -481,6 +483,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 						.getColumnIndex(KEY_ITEM_UNIT)));
 				item.setItemNote(cursor.getString(cursor
 						.getColumnIndex(KEY_ITEM_NOTE)));
+				item.setItemCategory(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_CATEGORY)));
 
 				items.add(item);
 				cursor.moveToNext();
@@ -503,7 +507,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		Item item = new Item();
 		Cursor cursor = db.query(TABLE_RECIPES,
 				new String[] { KEY_RECIPE_NAME, KEY_ITEM_NAME,
-						KEY_ITEM_QUANTITY, KEY_ITEM_UNIT, KEY_ITEM_NOTE },
+						KEY_ITEM_QUANTITY, KEY_ITEM_UNIT, KEY_ITEM_NOTE,KEY_ITEM_CATEGORY},
 				KEY_RECIPE_NAME + "=?" + " AND " + KEY_ITEM_NAME + "=?",
 				new String[] { recipeName, itemName }, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
@@ -515,6 +519,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 					.getColumnIndex(KEY_ITEM_UNIT)));
 			item.setItemNote(cursor.getString(cursor
 					.getColumnIndex(KEY_ITEM_NOTE)));
+			item.setItemCategory(cursor.getString(cursor
+					.getColumnIndex(KEY_ITEM_CATEGORY)));
 		}
 		cursor.close();
 		db.close();
@@ -882,7 +888,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * @param listName
 	 * @return arraylist of items
 	 */
-	private ArrayList<Item> getShoppingItems(String listName) {
+	public ArrayList<Item> getShoppingItems(String listName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		ArrayList<Item> items = new ArrayList<Item>();
 		Cursor cursor = db.query(TABLE_SHOPPING, new String[] { KEY_SHOPPING_LIST_NAME,
@@ -1005,6 +1011,34 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return db.delete(TABLE_SHOPPING, KEY_SHOPPING_LIST_NAME + "=?" + " AND "
 				+ KEY_ITEM_NAME + "=?", new String[] { listName, itemName }) > 0;
 		
+	}
+
+	/**
+	 * remove a given shopping list from shopping table
+	 * @param listName
+	 * @return number of items deleted in this list
+	 */
+	public int removeShoppingList(String listName) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		String[] args = new String[1];
+		args[0] = listName;
+		return db.delete(TABLE_SHOPPING, KEY_SHOPPING_LIST_NAME + "=?", args);
+	}
+
+	/**
+	 * change the name of a given shopping list
+	 * @param listName
+	 * @param newListName
+	 * @return number of records changed in this list
+	 */
+	public int changeShoppingListName(String oldListName, String newListName) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		ContentValues values = new ContentValues();
+		// itemNewValues.put(ITEM_TYPE,menuItem.getType());
+		values.put(KEY_SHOPPING_LIST_NAME, newListName);
+		String[] args = new String[1];
+		args[0] = oldListName;
+		return db.update(TABLE_SHOPPING, values, KEY_SHOPPING_LIST_NAME + "=?", args);
 	}
 
 }

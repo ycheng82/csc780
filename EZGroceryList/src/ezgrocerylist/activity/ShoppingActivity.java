@@ -177,7 +177,7 @@ public class ShoppingActivity extends ActionBarActivity implements
 
 			emailIntent.setType("plain/text");
 			DatabaseHandler db = new DatabaseHandler(this);
-			ArrayList<Item> items = db.getItems(listName);
+			ArrayList<Item> items = db.getShoppingItems(listName);
 			
 			for (int i = 0; i < items.size();i++){
 				listContents += items.get(i).getItemName() + "			";
@@ -367,6 +367,7 @@ public class ShoppingActivity extends ActionBarActivity implements
 				listName = input.getText().toString();
 				Intent intent = new Intent(ShoppingActivity.this,
 						ItemActivity.class);
+				intent.putExtra("type","shopping");
 
 				intent.putExtra("listname", listName);
 				startActivityForResult(intent, 0);
@@ -405,7 +406,7 @@ public class ShoppingActivity extends ActionBarActivity implements
 				String newListName = input.getText().toString();
 				// update records in database
 				DatabaseHandler db = new DatabaseHandler(ShoppingActivity.this);
-				int i = db.changeListName(listName, newListName);
+				int i = db.changeShoppingListName(listName, newListName);
 				Toast.makeText(ShoppingActivity.this,
 						i + " recodes in " + listName + " have been changed.",
 						Toast.LENGTH_LONG).show();
@@ -433,7 +434,7 @@ public class ShoppingActivity extends ActionBarActivity implements
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				DatabaseHandler db = new DatabaseHandler(ShoppingActivity.this);
-				int i = db.removeList(listName);
+				int i = db.removeShoppingList(listName);
 				Toast.makeText(ShoppingActivity.this,
 						i + " recodes in " + listName + " have been deleted.",
 						Toast.LENGTH_LONG).show();

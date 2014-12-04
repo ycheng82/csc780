@@ -78,6 +78,36 @@ public class IngredientActivity extends Activity {
 				// Do nothing, just another required interface callback
 			}
 		});
+		
+		//set up the values for item category using spinner
+        Spinner spCategory = (Spinner) findViewById(R.id.spCategory);
+        ArrayAdapter<CharSequence> adapterCategory = ArrayAdapter.createFromResource(this,
+                R.array.item_category, android.R.layout.simple_spinner_item);
+        adapterCategory.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spCategory.setAdapter(adapterCategory);
+        spCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            /**
+             * Called when a new category is selected (in the Spinner)
+             */
+				@Override
+				public void onItemSelected(AdapterView<?> parent, View view, 
+			            int pos, long id) {
+					// TODO Auto-generated method stub
+			        String selected = parent.getItemAtPosition(pos).toString();
+
+			        if(selected.equals("new"))
+			        {
+			        	//addCategory();
+			        	//NOT COMPLETE YET
+			        }
+
+				}            
+
+                public void onNothingSelected(AdapterView<?> parent) {
+                    // Do nothing, just another required interface callback
+                }
+        });
+        
 
 		// get list name from intent
 		Bundle extras = getIntent().getExtras();
@@ -100,6 +130,9 @@ public class IngredientActivity extends Activity {
 				Log.e("itemNote",ingredient.getItemNote());
 				((EditText) findViewById(R.id.etNote)).setText(ingredient
 						.getItemNote());
+				// set ingredient category
+				((Spinner) findViewById(R.id.spCategory)).setSelection(getIndex(
+						spinner, ingredient.getItemCategory()));
 			}
 		}
 
@@ -156,7 +189,9 @@ public class IngredientActivity extends Activity {
 				.getSelectedItem().toString();
 		String itemNote = ((EditText) findViewById(R.id.etNote)).getText()
 				.toString();
-		Item item = new Item(itemName, itemQuantity, itemUnit, itemNote);
+		String itemCategory = ((Spinner) findViewById(R.id.spCategory))
+				.getSelectedItem().toString();
+		Item item = new Item(itemName, itemQuantity, itemUnit, itemNote,itemCategory);
 		db.addIngredient(recipeName, item);
 		db.close();
 		Intent intent = new Intent();

@@ -47,11 +47,12 @@ public class Item {
         this.setItemCategory(itemCategory);
         this.setItemBarcode(itemBarcode);
     }
-    public Item(String itemName, int itemQuantity, String itemUnit, String itemNote) {
+    public Item(String itemName, int itemQuantity, String itemUnit, String itemNote,String itemCategory) {
         this.setItemName(itemName);
         this.setItemQuantity(itemQuantity);
         this.setItemUnit(itemUnit);
         this.setItemNote(itemNote);
+        this.setItemCategory(itemCategory);
     }
 	public String getItemName() {
 		return itemName;
