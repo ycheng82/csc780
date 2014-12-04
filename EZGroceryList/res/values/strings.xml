@@ -30,6 +30,8 @@
     <string name="label_step_id">Step Id</string>
     <string name="label_step_detail">Step Detail</string>
     <string name="label_images">Images</string>
+    <string name="label_edit_item">Edit Item</string>
+    <string name="label_shop_item">Add to Shopping</string>
     <string name="button_delete">Delete</string>
     <string name="button_move">Move</string>
     <string name="button_done">Done</string>

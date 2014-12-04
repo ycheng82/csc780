@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +13,6 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ExpandableListView.OnChildClickListener;
-import android.widget.ExpandableListView.OnGroupClickListener;
-
 import com.ezgrocerylist.R;
 
 public class ListFragment extends Fragment {
@@ -29,29 +24,27 @@ public class ListFragment extends Fragment {
 	private String[][] listContents;
 	OnListSelectedListener mCallback;
 
-
 	public ListFragment() {
 
 	}
 
-    public interface OnListSelectedListener {
-        public void onListSelected(String contents,String listName);
-    }
-    
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
-        try {
-            mCallback = (OnListSelectedListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnListSelectedListener");
-        }
-    }
+	public interface OnListSelectedListener {
+		public void onListSelected(String contents, String listName);
+	}
 
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+
+		// This makes sure that the container activity has implemented
+		// the callback interface. If not, it throws an exception
+		try {
+			mCallback = (OnListSelectedListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString()
+					+ " must implement OnListSelectedListener");
+		}
+	}
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -59,6 +52,7 @@ public class ListFragment extends Fragment {
 		groups = listNames.toArray(new String[listNames.size()]);
 
 		children = listContents;
+
 	}
 
 	@Override
@@ -74,21 +68,23 @@ public class ListFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 
 		lv = (ExpandableListView) view.findViewById(R.id.expListView);
-		final ExpandableListAdapter adapter = new ExpandableListAdapter(groups, children);
+		final ExpandableListAdapter adapter = new ExpandableListAdapter(groups,
+				children);
 		lv.setAdapter(adapter);
 		lv.setGroupIndicator(null);
 		lv.setOnGroupClickListener(new OnGroupClickListener() {
-	        public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition,
-	                long id) {
-	        	String listName = adapter.getGroup(groupPosition).toString();
-	        	String contents = "";
-	        	for (int i =0;i<children[groupPosition].length;i++){
-	        		contents+=adapter.getChild(groupPosition,i).toString()+"\n";
-	        	}
-	        	mCallback.onListSelected(contents,listName);
+			public boolean onGroupClick(ExpandableListView parent, View v,
+					int groupPosition, long id) {
+				String listName = adapter.getGroup(groupPosition).toString();
+				String contents = "";
+				for (int i = 0; i < children[groupPosition].length; i++) {
+					contents += adapter.getChild(groupPosition, i).toString()
+							+ "\n";
+				}
+				mCallback.onListSelected(contents, listName);
 
-	        	return false;
-	        }
+				return false;
+			}
 		});
 	}
 
@@ -200,7 +196,7 @@ public class ListFragment extends Fragment {
 
 		@Override
 		public boolean isChildSelectable(int groupPosition, int childPosition) {
-			
+
 			return true;
 		}
 

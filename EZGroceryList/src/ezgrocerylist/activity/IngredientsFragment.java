@@ -1,7 +1,5 @@
 package ezgrocerylist.activity;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import com.ezgrocerylist.R;
@@ -9,16 +7,13 @@ import com.ezgrocerylist.R;
 import ezgrocerylist.sql.DatabaseHandler;
 import ezgrocerylist.sql.Item;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
 /**

@@ -50,10 +50,10 @@ public class BarcodeActivity extends Activity implements OnClickListener {
 			IntentIntegrator.initiateScan(this);
 			
 		}
-		if(v.getId()==R.id.add_button ){
-			Log.d("scan", "add clicked");
-			Log.d("code", scanContent);
-			Log.d("listname", listName);
+		else if(v.getId()==R.id.add_button ){
+			Log.e("scan", "add clicked");
+			Log.e("code", scanContent);
+			Log.e("listname", listName);
 			//return to ItemActivity
 			Intent intent = new Intent(this, ItemActivity.class);
 			Bundle extras = new Bundle();

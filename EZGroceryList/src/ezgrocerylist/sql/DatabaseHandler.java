@@ -1,6 +1,8 @@
 package ezgrocerylist.sql;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -11,7 +13,7 @@ import android.net.Uri;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-	private static final int DATABASE_VERSION = 17;
+	private static final int DATABASE_VERSION = 19;
 
 	private static final String DATABASE_NAME = "EZgrocery";
 
@@ -19,6 +21,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String TABLE_RECIPES = "recipes";
 	private static final String TABLE_IMAGES = "images";
 	private static final String TABLE_STEPS = "steps";
+	private static final String TABLE_SHOPPING = "shopping";
 
 	private static final String KEY_LIST_NAME = "listName";
 	private static final String KEY_ITEM_NAME = "itemName";
@@ -34,6 +37,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String KEY_RECIPE_IMAGE = "recipeImage";
 	private static final String KEY_STEP_ID = "stepId";
 	private static final String KEY_STEP_DETAIL = "stepDetail";
+	
+	private static final String KEY_SHOPPING_LIST_NAME = "shoppingListName";
 
 	public DatabaseHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -65,6 +70,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_RECIPE_NAME + " TEXT NOT NULL," + KEY_RECIPE_COVER
 				+ " INTEGER," + KEY_RECIPE_IMAGE + " TEXT" + ")";
 		db.execSQL(CREATE_TAGS_TABLE_IMAGES);
+		String CREATE_TAGS_TABLE_SHOPPING = "CREATE TABLE " + TABLE_SHOPPING + "("
+				+ KEY_SHOPPING_LIST_NAME + " TEXT NOT NULL," + KEY_ITEM_NAME
+				+ " TEXT NOT NULL," + KEY_ITEM_QUANTITY + " INTEGER,"
+				+ KEY_ITEM_UNIT + " TEXT," + KEY_ITEM_PRICE + " FLOAT,"
+				+ KEY_ITEM_NOTE + " TEXT," + KEY_ITEM_CATEGORY + " TEXT,"
+				+ KEY_ITEM_BARCODE + " TEXT" + ")";
+		db.execSQL(CREATE_TAGS_TABLE_SHOPPING);
 	}
 
 	@Override
@@ -73,25 +85,53 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECIPES);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_STEPS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_IMAGES);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_SHOPPING);
 		onCreate(db);
 	}
 
 	/**
 	 * Add a new item to the database.
 	 */
-	public void addItem(String listName, Item item) {
+	public int addItem(String listName, Item item) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
-		values.put(KEY_LIST_NAME, listName);
-		values.put(KEY_ITEM_NAME, item.getItemName());
-		values.put(KEY_ITEM_QUANTITY, item.getItemQuantity());
-		values.put(KEY_ITEM_UNIT, item.getItemUnit());
-		values.put(KEY_ITEM_PRICE, item.getItemPrice());
-		values.put(KEY_ITEM_NOTE, item.getItemNote());
-		values.put(KEY_ITEM_CATEGORY, item.getItemCategory());
-		values.put(KEY_ITEM_BARCODE, item.getItemBarcode());
-		db.insert(TABLE_ITEMS, null, values);
-		db.close();
+		Cursor cursor = db.query(TABLE_ITEMS,
+				new String[] {KEY_LIST_NAME,
+				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT,
+				KEY_ITEM_PRICE, KEY_ITEM_NOTE, KEY_ITEM_CATEGORY,
+				KEY_ITEM_BARCODE },
+				KEY_LIST_NAME + "=?" + " AND " + KEY_ITEM_NAME + "=?",
+				new String[] { listName, item.getItemName() }, null, null,
+				null, null);
+		if (cursor.moveToFirst()) {
+			// record exists
+			values.put(KEY_LIST_NAME, listName);
+			values.put(KEY_ITEM_NAME, item.getItemName());
+			values.put(KEY_ITEM_QUANTITY, item.getItemQuantity());
+			values.put(KEY_ITEM_UNIT, item.getItemUnit());
+			values.put(KEY_ITEM_PRICE, item.getItemPrice());
+			values.put(KEY_ITEM_NOTE, item.getItemNote());
+			values.put(KEY_ITEM_CATEGORY, item.getItemCategory());
+			values.put(KEY_ITEM_BARCODE, item.getItemBarcode());
+			String[] args = new String[1];
+			args[0] = listName;
+			return db.update(TABLE_ITEMS, values, KEY_LIST_NAME + "=?"
+					+ " AND " + KEY_ITEM_NAME + "=?", new String[] {
+					listName, item.getItemName() });
+		} else {
+			// record not found
+			values.put(KEY_LIST_NAME, listName);
+			values.put(KEY_ITEM_NAME, item.getItemName());
+			values.put(KEY_ITEM_QUANTITY, item.getItemQuantity());
+			values.put(KEY_ITEM_UNIT, item.getItemUnit());
+			values.put(KEY_ITEM_PRICE, item.getItemPrice());
+			values.put(KEY_ITEM_NOTE, item.getItemNote());
+			values.put(KEY_ITEM_CATEGORY, item.getItemCategory());
+			values.put(KEY_ITEM_BARCODE, item.getItemBarcode());
+			db.insert(TABLE_ITEMS, null, values);
+			db.close();
+			return 1;
+		}
 	}
 
 	/**
@@ -229,17 +269,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	/**
 	 * Add recipe step to the database.
-	 * @return 
+	 * 
+	 * @return
 	 */
 	public int addStep(String recipeName, Step step) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
-		Cursor cursor = db.query(TABLE_STEPS,
-				new String[] { KEY_RECIPE_NAME, KEY_STEP_ID,
-						KEY_STEP_DETAIL},
-				KEY_RECIPE_NAME + "=?" + " AND " + KEY_STEP_ID + "=?",
-				new String[] { recipeName, Integer.toString(step.getStepId()) }, null, null,
-				null, null);
+		Cursor cursor = db.query(TABLE_STEPS, new String[] { KEY_RECIPE_NAME,
+				KEY_STEP_ID, KEY_STEP_DETAIL }, KEY_RECIPE_NAME + "=?"
+				+ " AND " + KEY_STEP_ID + "=?", new String[] { recipeName,
+				Integer.toString(step.getStepId()) }, null, null, null, null);
 		if (cursor.moveToFirst()) {
 			// record exists
 			values.put(KEY_RECIPE_NAME, recipeName);
@@ -248,8 +287,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			String[] args = new String[1];
 			args[0] = recipeName;
 			return db.update(TABLE_STEPS, values, KEY_RECIPE_NAME + "=?"
-					+ " AND " + KEY_STEP_ID + "=?", new String[] {
-					recipeName, Integer.toString(step.getStepId()) });
+					+ " AND " + KEY_STEP_ID + "=?", new String[] { recipeName,
+					Integer.toString(step.getStepId()) });
 		} else {
 			// record not found
 			values.put(KEY_RECIPE_NAME, recipeName);
@@ -502,11 +541,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public ArrayList<Step> getSteps(String recipeName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		ArrayList<Step> steps = new ArrayList<Step>();
-		Cursor cursor = db.query(TABLE_STEPS,
-				new String[] { KEY_RECIPE_NAME, KEY_STEP_ID,
-						KEY_STEP_DETAIL },
-				KEY_RECIPE_NAME + "=?", new String[] { recipeName }, null,
-				null, null, null);
+		Cursor cursor = db.query(TABLE_STEPS, new String[] { KEY_RECIPE_NAME,
+				KEY_STEP_ID, KEY_STEP_DETAIL }, KEY_RECIPE_NAME + "=?",
+				new String[] { recipeName }, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			while (cursor.isAfterLast() == false) {
 				// Calllog is a class with list of fileds
@@ -547,6 +584,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.close();
 		return step;
 	}
+
 	/**
 	 * delete a recipe step from recipe database
 	 * 
@@ -557,6 +595,416 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public boolean deleteStep(String recipeName, int stepId) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		return db.delete(TABLE_STEPS, KEY_RECIPE_NAME + "=?" + " AND "
-				+ KEY_STEP_ID + "=?", new String[] { recipeName, Integer.toString(stepId) }) > 0;
+				+ KEY_STEP_ID + "=?",
+				new String[] { recipeName, Integer.toString(stepId) }) > 0;
 	}
+
+	/**
+	 * get category in a pantry list
+	 * @param listName
+	 * @return
+	 */
+	public String[] getListCategory(String listName) {
+		// retrieve items from database
+		ArrayList<Item> items = new ArrayList<Item>();
+		items = getItems(listName);
+
+		// split items into category
+		ArrayList<String> cats = new ArrayList<String>();
+		HashSet<String> uCats = null;
+		if (items.size() != 0) {
+			for (int i = 0; i < items.size(); i++) {
+				cats.add(items.get(i).getItemCategory());
+			}
+			uCats = new HashSet<>(cats);
+			// Log.d("showList","#category: " + uCats.size());
+		}
+		return uCats.toArray(new String[uCats.size()]);
+	}
+
+	/**
+	 * get the contents in a pantry list
+	 * @param listName
+	 * @return
+	 */
+	public String[][] getListContents(String listName) {
+		String[] uCats = getListCategory(listName);
+		String[][] listContents = new String[uCats.length][1];
+		// retrieve items from database
+		int k = 0;
+		String listText = "";
+		ArrayList<Item> items = new ArrayList<Item>();
+		items = getItems(listName);
+
+		// split items into category
+		ArrayList<String> cats = new ArrayList<String>();
+		if (items.size() != 0) {
+			for (int i = 0; i < items.size(); i++) {
+				cats.add(items.get(i).getItemCategory());
+			}
+		}
+
+		// add view for these items if they are not null
+		if (uCats != null) {
+
+			for (String value : uCats) {
+				listText="";
+				for (int j = 0; j < items.size(); j++) {
+					
+					if (items.get(j).getItemCategory().equals(value)) {
+						// Log.d("category 1 ",items.get(j).getItemCategory());
+						listText += items.get(j).getItemName() + "		"
+								+ items.get(j).getItemQuantity() + "		"
+								+ items.get(j).getItemUnit() + "\n";
+					}
+				}
+				listContents[k][0] = listText;
+				k++;
+			}
+		}
+		// Log.d("list contents: ", listText);
+
+		return listContents;
+	}
+	
+	/**
+	 * get an item from database
+	 * 
+	 * @param recipeName
+	 * @param itemName
+	 * @return item
+	 */
+	public Item getItem(String listName, String itemName) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		Item item = new Item();
+		Cursor cursor = db.query(TABLE_ITEMS,
+				new String[] { KEY_LIST_NAME,
+				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT,
+				KEY_ITEM_PRICE, KEY_ITEM_NOTE, KEY_ITEM_CATEGORY,
+				KEY_ITEM_BARCODE },
+				KEY_LIST_NAME + "=?" + " AND " + KEY_ITEM_NAME + "=?",
+				new String[] { listName, itemName }, null, null, null);
+		if (cursor != null && cursor.moveToFirst()) {
+			item.setItemName(cursor.getString(cursor
+					.getColumnIndex(KEY_ITEM_NAME)));
+			item.setItemQuantity(cursor.getInt(cursor
+					.getColumnIndex(KEY_ITEM_QUANTITY)));
+			item.setItemUnit(cursor.getString(cursor
+					.getColumnIndex(KEY_ITEM_UNIT)));
+			item.setItemNote(cursor.getString(cursor
+					.getColumnIndex(KEY_ITEM_NOTE)));
+			item.setItemPrice(cursor.getFloat(cursor
+					.getColumnIndex(KEY_ITEM_PRICE)));
+			item.setItemCategory(cursor.getString(cursor
+					.getColumnIndex(KEY_ITEM_CATEGORY)));
+			item.setItemBarcode(cursor.getString(cursor
+					.getColumnIndex(KEY_ITEM_BARCODE)));
+		}
+		cursor.close();
+		db.close();
+		return item;
+	}
+	/**
+	 * delete an item from pantry database
+	 * 
+	 * @param listName
+	 * @param itemName
+	 * @return true if deleted, false if not deleted
+	 */
+	public boolean deleteItem(String listName, String itemName) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		return db.delete(TABLE_ITEMS, KEY_LIST_NAME + "=?" + " AND "
+				+ KEY_ITEM_NAME + "=?", new String[] { listName, itemName }) > 0;
+	}
+	/**
+	 * delete a recipe from recipe database
+	 * 
+	 * @param recipeName
+	 * @return true if deleted, false if not deleted
+	 */
+	public boolean deleteRecipe(String recipeName) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		int n1 = db.delete(TABLE_STEPS, KEY_RECIPE_NAME + "=?",
+				new String[] { recipeName }) ;
+		int n2 = db.delete(TABLE_IMAGES, KEY_RECIPE_NAME + "=?",
+				new String[] { recipeName });
+		int n3 = db.delete(TABLE_RECIPES, KEY_RECIPE_NAME + "=?",
+				new String[] { recipeName });
+		return (n1+n2+n3)> 0;
+	}
+
+	public ArrayList<Item> getCategoryContents(String listName, String categoryName) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		ArrayList<Item> items = new ArrayList<Item>();
+		Cursor cursor = db.query(TABLE_ITEMS, new String[] { KEY_LIST_NAME,
+				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT,
+				KEY_ITEM_PRICE, KEY_ITEM_NOTE, KEY_ITEM_CATEGORY,
+				KEY_ITEM_BARCODE }, KEY_LIST_NAME + "=?"+ " AND "
+						+ KEY_ITEM_CATEGORY + "=?",
+				new String[] { listName,categoryName }, null, null, null, null);
+		if (cursor != null && cursor.moveToFirst()) {
+			while (cursor.isAfterLast() == false) {
+				// Calllog is a class with list of fileds
+				Item item = new Item();
+				// item.setId(cursor.getLong(cursor.getColumnIndex(KEY_LIST_NAME)));
+				item.setItemName(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_NAME)));
+				item.setItemQuantity(cursor.getInt(cursor
+						.getColumnIndex(KEY_ITEM_QUANTITY)));
+				item.setItemUnit(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_UNIT)));
+				item.setItemPrice(cursor.getFloat(cursor
+						.getColumnIndex(KEY_ITEM_PRICE)));
+				item.setItemCategory(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_CATEGORY)));
+				item.setItemNote(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_NOTE)));
+				item.setItemBarcode(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_BARCODE)));
+
+				items.add(item);
+				cursor.moveToNext();
+			}
+		}
+		cursor.close();
+		db.close();
+		return items;
+	}
+
+	public boolean addShoppingItems(String shoppingListName,
+			ArrayList<Item> items) {
+		int k = 0;
+		for(int i = 0; i<items.size();i++){
+			addShoppingItem(shoppingListName,items.get(i));
+			k++;
+		}
+		if (k == items.size()){
+			return true;
+		}
+		else {
+			return false;
+		}
+		
+	}
+	
+	/**
+	 * Add a new item to the database.
+	 */
+	public int addShoppingItem(String listName, Item item) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		Cursor cursor = db.query(TABLE_SHOPPING,
+				new String[] {KEY_SHOPPING_LIST_NAME,
+				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT,
+				KEY_ITEM_PRICE, KEY_ITEM_NOTE, KEY_ITEM_CATEGORY,
+				KEY_ITEM_BARCODE },
+				KEY_SHOPPING_LIST_NAME + "=?" + " AND " + KEY_ITEM_NAME + "=?",
+				new String[] { listName, item.getItemName() }, null, null,
+				null, null);
+		if (cursor.moveToFirst()) {
+			// record exists
+			values.put(KEY_SHOPPING_LIST_NAME, listName);
+			values.put(KEY_ITEM_NAME, item.getItemName());
+			values.put(KEY_ITEM_QUANTITY, item.getItemQuantity());
+			values.put(KEY_ITEM_UNIT, item.getItemUnit());
+			values.put(KEY_ITEM_PRICE, item.getItemPrice());
+			values.put(KEY_ITEM_NOTE, item.getItemNote());
+			values.put(KEY_ITEM_CATEGORY, item.getItemCategory());
+			values.put(KEY_ITEM_BARCODE, item.getItemBarcode());
+			String[] args = new String[1];
+			args[0] = listName;
+			return db.update(TABLE_SHOPPING, values, KEY_SHOPPING_LIST_NAME + "=?"
+					+ " AND " + KEY_ITEM_NAME + "=?", new String[] {
+					listName, item.getItemName() });
+		} else {
+			// record not found
+			values.put(KEY_SHOPPING_LIST_NAME, listName);
+			values.put(KEY_ITEM_NAME, item.getItemName());
+			values.put(KEY_ITEM_QUANTITY, item.getItemQuantity());
+			values.put(KEY_ITEM_UNIT, item.getItemUnit());
+			values.put(KEY_ITEM_PRICE, item.getItemPrice());
+			values.put(KEY_ITEM_NOTE, item.getItemNote());
+			values.put(KEY_ITEM_CATEGORY, item.getItemCategory());
+			values.put(KEY_ITEM_BARCODE, item.getItemBarcode());
+			db.insert(TABLE_SHOPPING, null, values);
+			db.close();
+			return 1;
+		}
+	}
+
+	/**
+	 * get all the shopping lists in the database
+	 * @return arraylist of names of shopping list
+	 */
+	public ArrayList<String> getShoppingLists() {
+		SQLiteDatabase db = this.getReadableDatabase();
+		ArrayList<String> names = new ArrayList<String>();
+		Cursor cursor = db.query(TABLE_SHOPPING, new String[] { KEY_SHOPPING_LIST_NAME },
+				null, null, null, null, null);
+		if (cursor != null && cursor.moveToFirst()) {
+			while (cursor.isAfterLast() == false) {
+				String name = cursor.getString(cursor
+						.getColumnIndex(KEY_SHOPPING_LIST_NAME));
+				names.add(name);
+				cursor.moveToNext();
+			}
+		}
+		cursor.close();
+		db.close();
+		return names;
+	}
+
+	/**
+	 * get category for a shopping list
+	 * @param listName
+	 * @return array of string of category name
+	 */
+	public String[] getShoppingListCategory(String listName) {
+		// retrieve items from database
+		ArrayList<Item> items = new ArrayList<Item>();
+		items = getShoppingItems(listName);
+
+		// split items into category
+		ArrayList<String> cats = new ArrayList<String>();
+		HashSet<String> uCats = null;
+		if (items.size() != 0) {
+			for (int i = 0; i < items.size(); i++) {
+				cats.add(items.get(i).getItemCategory());
+			}
+			uCats = new HashSet<>(cats);
+			// Log.d("showList","#category: " + uCats.size());
+		}
+		return uCats.toArray(new String[uCats.size()]);
+	}
+
+	/**
+	 * Get items in a given shopping list
+	 * @param listName
+	 * @return arraylist of items
+	 */
+	private ArrayList<Item> getShoppingItems(String listName) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		ArrayList<Item> items = new ArrayList<Item>();
+		Cursor cursor = db.query(TABLE_SHOPPING, new String[] { KEY_SHOPPING_LIST_NAME,
+				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT,
+				KEY_ITEM_PRICE, KEY_ITEM_NOTE, KEY_ITEM_CATEGORY,
+				KEY_ITEM_BARCODE }, KEY_SHOPPING_LIST_NAME + "=?",
+				new String[] { listName }, null, null, null, null);
+		if (cursor != null && cursor.moveToFirst()) {
+			while (cursor.isAfterLast() == false) {
+				// Calllog is a class with list of fileds
+				Item item = new Item();
+				// item.setId(cursor.getLong(cursor.getColumnIndex(KEY_LIST_NAME)));
+				item.setItemName(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_NAME)));
+				item.setItemQuantity(cursor.getInt(cursor
+						.getColumnIndex(KEY_ITEM_QUANTITY)));
+				item.setItemUnit(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_UNIT)));
+				item.setItemPrice(cursor.getFloat(cursor
+						.getColumnIndex(KEY_ITEM_PRICE)));
+				item.setItemCategory(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_CATEGORY)));
+				item.setItemNote(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_NOTE)));
+				item.setItemBarcode(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_BARCODE)));
+
+				items.add(item);
+				cursor.moveToNext();
+			}
+		}
+		cursor.close();
+		db.close();
+		return items;
+	}
+
+	public List<Item> getShoppingCategoryContents(String listName, String categoryName) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		ArrayList<Item> items = new ArrayList<Item>();
+		Cursor cursor = db.query(TABLE_SHOPPING, new String[] { KEY_SHOPPING_LIST_NAME,
+				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT,
+				KEY_ITEM_PRICE, KEY_ITEM_NOTE, KEY_ITEM_CATEGORY,
+				KEY_ITEM_BARCODE }, KEY_SHOPPING_LIST_NAME + "=?"+ " AND "
+						+ KEY_ITEM_CATEGORY + "=?",
+				new String[] { listName,categoryName }, null, null, null, null);
+		if (cursor != null && cursor.moveToFirst()) {
+			while (cursor.isAfterLast() == false) {
+				// Calllog is a class with list of fileds
+				Item item = new Item();
+				// item.setId(cursor.getLong(cursor.getColumnIndex(KEY_LIST_NAME)));
+				item.setItemName(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_NAME)));
+				item.setItemQuantity(cursor.getInt(cursor
+						.getColumnIndex(KEY_ITEM_QUANTITY)));
+				item.setItemUnit(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_UNIT)));
+				item.setItemPrice(cursor.getFloat(cursor
+						.getColumnIndex(KEY_ITEM_PRICE)));
+				item.setItemCategory(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_CATEGORY)));
+				item.setItemNote(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_NOTE)));
+				item.setItemBarcode(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_BARCODE)));
+
+				items.add(item);
+				cursor.moveToNext();
+			}
+		}
+		cursor.close();
+		db.close();
+		return items;
+	}
+
+	/**
+	 * get an item from shopping table
+	 * @param listName shopping list name
+	 * @param itemName item name
+	 * @return item
+	 */
+	public Item getShoppingItem(String listName, String itemName) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		Item item = new Item();
+		Cursor cursor = db.query(TABLE_SHOPPING,
+				new String[] { KEY_SHOPPING_LIST_NAME,
+				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT,
+				KEY_ITEM_PRICE, KEY_ITEM_NOTE, KEY_ITEM_CATEGORY,
+				KEY_ITEM_BARCODE },
+				KEY_SHOPPING_LIST_NAME + "=?" + " AND " + KEY_ITEM_NAME + "=?",
+				new String[] { listName, itemName }, null, null, null);
+		if (cursor != null && cursor.moveToFirst()) {
+			item.setItemName(cursor.getString(cursor
+					.getColumnIndex(KEY_ITEM_NAME)));
+			item.setItemQuantity(cursor.getInt(cursor
+					.getColumnIndex(KEY_ITEM_QUANTITY)));
+			item.setItemUnit(cursor.getString(cursor
+					.getColumnIndex(KEY_ITEM_UNIT)));
+			item.setItemNote(cursor.getString(cursor
+					.getColumnIndex(KEY_ITEM_NOTE)));
+			item.setItemPrice(cursor.getFloat(cursor
+					.getColumnIndex(KEY_ITEM_PRICE)));
+			item.setItemCategory(cursor.getString(cursor
+					.getColumnIndex(KEY_ITEM_CATEGORY)));
+			item.setItemBarcode(cursor.getString(cursor
+					.getColumnIndex(KEY_ITEM_BARCODE)));
+		}
+		cursor.close();
+		db.close();
+		return item;
+	}
+
+	/**
+	 * delete an item from shopping table
+	 * @param listName
+	 * @param itemName
+	 * @return true if item is deleted; false if item is not deleted
+	 */
+	public boolean deleteShoppingItem(String listName, String itemName) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		return db.delete(TABLE_SHOPPING, KEY_SHOPPING_LIST_NAME + "=?" + " AND "
+				+ KEY_ITEM_NAME + "=?", new String[] { listName, itemName }) > 0;
+		
+	}
+
 }

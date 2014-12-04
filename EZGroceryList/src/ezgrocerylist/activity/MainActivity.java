@@ -3,16 +3,11 @@ package ezgrocerylist.activity;
 import ezgrocerylist.circlemenu.view.CircleLayout.OnItemClickListener;
 import ezgrocerylist.circlemenu.view.CircleLayout.OnItemSelectedListener;
 
-import android.media.Image;
 import android.os.Bundle;
-
-import java.security.PublicKey;
 
 import com.ezgrocerylist.R;
 
 import android.app.Activity;
-import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,28 +15,18 @@ import android.widget.Toast;
 
 import ezgrocerylist.circlemenu.view.CircleImageView;
 import ezgrocerylist.circlemenu.view.CircleLayout;
-import ezgrocerylist.circlemenu.view.CircleLayout.OnItemClickListener;
-import ezgrocerylist.circlemenu.view.CircleLayout.OnItemSelectedListener;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
-import android.app.Activity;
-import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuInflater;
-import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AbsListView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
 /**
  * Description: <br/>
@@ -204,9 +189,9 @@ public class MainActivity extends Activity implements OnItemSelectedListener,
 					startActivity(recipeIntent);
 					break;
 				case "Shopping List":
-					// Intent intent= new Intent(MainActivity.this,
-					// PantryActivity.class);
-					// startActivity(intent);
+					Intent shoppingIntent= new Intent(MainActivity.this,
+					ShoppingActivity.class);
+					startActivity(shoppingIntent);
 					break;
 				case "Setting":
 					// Intent intent= new Intent(MainActivity.this,

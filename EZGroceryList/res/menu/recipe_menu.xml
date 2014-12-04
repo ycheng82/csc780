@@ -13,17 +13,9 @@
           android:icon="@drawable/ic_cloud"
           android:title="@string/action_cloud"
           app:showAsAction="always" />
-    <item android:id="@+id/recipe_action_text"
-          android:icon="@drawable/ic_textfield"
-          android:title="@string/action_text"
-          app:showAsAction="always" />
     <item android:id="@+id/recipe_action_email"
           android:icon="@drawable/ic_share_email"
           android:title="@string/action_email"
-          app:showAsAction="always" />
-    <item android:id="@+id/recipe_action_voice"
-          android:icon="@drawable/ic_voice_search"
-          android:title="@string/action_voice"
           app:showAsAction="always" />
     <!-- Settings, should always be in the overflow -->
     <item android:id="@+id/action_settings"

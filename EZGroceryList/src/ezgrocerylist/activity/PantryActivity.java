@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import com.ezgrocerylist.R;
 
+import ezgrocerylist.activity.AllListFragment.OnAllListSelectedListener;
 import ezgrocerylist.slidingmenu.adapter.NavDrawerListAdapter;
 import ezgrocerylist.slidingmenu.model.NavDrawerItem;
 import ezgrocerylist.sql.DatabaseHandler;
@@ -39,7 +40,7 @@ import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 
 public class PantryActivity extends ActionBarActivity implements
-		ListFragment.OnListSelectedListener {
+		OnAllListSelectedListener {
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -63,6 +64,8 @@ public class PantryActivity extends ActionBarActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_pantry);
+		
+		listContents="";
 
 		mTitle = mDrawerTitle = getTitle();
 
@@ -170,6 +173,7 @@ public class PantryActivity extends ActionBarActivity implements
 			Intent intent = new Intent(this, ItemActivity.class);
 
 			intent.putExtra("listname", listName);
+			intent.putExtra("type","Pantry");
 			startActivityForResult(intent, 0);
 			return true;
 		case R.id.action_email:
@@ -179,6 +183,14 @@ public class PantryActivity extends ActionBarActivity implements
 					"I want to share this list with you");
 
 			emailIntent.setType("plain/text");
+			DatabaseHandler db = new DatabaseHandler(this);
+			ArrayList<Item> items = db.getItems(listName);
+			
+			for (int i = 0; i < items.size();i++){
+				listContents += items.get(i).getItemName() + "			";
+				listContents += items.get(i).getItemQuantity() + "			";
+				listContents += items.get(i).getItemUnit() + "\n";
+			}
 			String emailBody = listContents;
 			// (TextView) findViewById(R.id.pantry_action_name)
 			emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailBody);
@@ -225,9 +237,23 @@ public class PantryActivity extends ActionBarActivity implements
 			break;
 		case 1:
 			// open list, need fragment replacement
-			fragment = new ListFragment();
-			((ListFragment) fragment).setListNames(getAllLists());
-			((ListFragment) fragment).setListContents(getListContents());
+			/*
+			 * if (getAllLists() != null) { fragment = new ListFragment();
+			 * ((ListFragment) fragment).setListNames(getAllLists());
+			 * 
+			 * ((ListFragment) fragment).setListContents(getListContents()); }
+			 * else{ fragment = new HomeFragment("Pantry"); }
+			 */
+			if (getAllLists() != null) {
+				fragment = new AllListFragment();
+				((AllListFragment) fragment).setListNames(getAllLists());
+
+				//((AllListFragment) fragment).setListContents(getListContents());
+			} else {
+				fragment = new HomeFragment("Pantry");
+			}
+
+			// ((ListFragment) fragment).setListContents(getListContents());
 			// fragment = new NameFragment();
 			// ((NameFragment) fragment).setListNames(getAllLists());
 			// ((NameFragment) fragment).setListContents(getListContents());
@@ -312,54 +338,6 @@ public class PantryActivity extends ActionBarActivity implements
 
 	}
 
-	private String[][] getListContents() {
-
-		DatabaseHandler db = new DatabaseHandler(this);
-		HashSet<String> listNames = getAllLists();
-		String[][] listContents = new String[listNames.size()][1];
-		// retrieve items from database
-		int k = 0;
-		for (String name : listNames) {
-			String listText = "";
-			ArrayList<Item> items = new ArrayList<Item>();
-			items = db.getItems(name);
-
-			// split items into category
-			ArrayList<String> cats = new ArrayList<String>();
-			HashSet<String> uCats = null;
-			if (items.size() != 0) {
-				for (int i = 0; i < items.size(); i++) {
-					cats.add(items.get(i).getItemCategory());
-				}
-				uCats = new HashSet<>(cats);
-				// Log.d("showList","#category: " + uCats.size());
-			}
-
-			// add view for these items if they are not null
-			if (uCats != null) {
-
-				for (String value : uCats) {
-					// listText ="";
-					listText += value + "\n";
-
-					for (int j = 0; j < items.size(); j++) {
-
-						if (items.get(j).getItemCategory().equals(value)) {
-							// Log.d("category 1 ",items.get(j).getItemCategory());
-							listText += items.get(j).getItemName() + "		"
-									+ items.get(j).getItemQuantity() + "		"
-									+ items.get(j).getItemUnit() + "\n";
-						}
-					}
-				}
-			}
-			// Log.d("list contents: ", listText);
-			listContents[k][0] = listText;
-			k++;
-		}
-		return listContents;
-
-	}
 
 	public void setListName(String listName) {
 		this.listName = listName;
@@ -479,11 +457,11 @@ public class PantryActivity extends ActionBarActivity implements
 		builder.show();
 	}
 
-	@Override
-	public void onListSelected(String contents, String listName) {
-		// TODO Auto-generated method stub
-		listContents = contents;
-		setListName(listName);
 
+
+	@Override
+	public void onListPicked(String listName) {
+		// TODO Auto-generated method stub
+		this.listName = listName;
 	}
 }

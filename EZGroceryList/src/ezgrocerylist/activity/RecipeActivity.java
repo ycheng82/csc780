@@ -16,7 +16,6 @@ import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -28,15 +27,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.LinearLayout.LayoutParams;
 
 public class RecipeActivity extends ActionBarActivity implements
 		ListFragment.OnListSelectedListener {
@@ -157,14 +150,6 @@ public class RecipeActivity extends ActionBarActivity implements
 		}
 		// Handle presses on the action bar items
 		switch (item.getItemId()) {
-		case R.id.recipe_action_text:
-			// actionName.setText("text input");
-			// call item input screen for an item
-			Intent intent = new Intent(this, ItemActivity.class);
-
-			intent.putExtra("listname", listName);
-			startActivityForResult(intent, 0);
-			return true;
 		case R.id.recipe_action_email:
 			// actionName.setText("share by email");
 			Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
@@ -181,12 +166,6 @@ public class RecipeActivity extends ActionBarActivity implements
 			return true;
 		case R.id.recipe_action_cloud:
 			
-			return true;
-		case R.id.recipe_action_voice:
-			// actionName.setText("voice input");
-			Intent voiceIntent = new Intent(this, VoiceActivity.class);
-			voiceIntent.putExtra("listname", listName);
-			startActivity(voiceIntent);
 			return true;
 		case R.id.action_settings:
 			// actionName.setText("setting");

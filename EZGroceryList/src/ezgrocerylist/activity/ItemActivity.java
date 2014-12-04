@@ -24,7 +24,7 @@ import android.widget.NumberPicker.OnValueChangeListener;
 
 public class ItemActivity extends Activity {
 	NumberPicker npQuantity;
-	String listName, barcode,itemName;
+	String listName, barcode,itemName,itemQuantity,editType;
 	final static public String TAG = "storage";
 	
 	@Override
@@ -111,11 +111,46 @@ public class ItemActivity extends Activity {
             listName = extras.getString("listname");
             barcode = extras.getString("barcode");
             itemName = extras.getString("itemname");
+            itemQuantity = extras.getString("itemquantity");
+            editType = extras.getString("type");
             if (barcode!=null){
             	((EditText) findViewById(R.id.etBarcode)).setText(barcode);
             }
             if (itemName!=null){
             	((EditText) findViewById(R.id.etItemName)).setText(itemName);
+            	if (itemQuantity!=null){
+            		// get item information from database and display
+    				DatabaseHandler db = new DatabaseHandler(this);
+    				Item item = new Item();
+    				if (editType.equals("shopping")){
+    					item = db.getShoppingItem(listName, itemName);
+    				}
+    				else{
+    					item = db.getItem(listName, itemName);
+    				}
+    				
+    				//Log.e("Category",item.getItemCategory());
+    				// set item name
+    				((EditText) findViewById(R.id.etItemName)).setText(item
+    						.getItemName());
+    				// set item price
+    				((EditText) findViewById(R.id.etPrice)).setText(Float.toString(item
+    						.getItemPrice()));
+    				// set item category
+    				((Spinner) findViewById(R.id.spCategory)).setSelection(getIndex(
+    						spCategory, item.getItemCategory()));
+    				// set item unit
+    				((Spinner) findViewById(R.id.spUnit)).setSelection(getIndex(
+    						spinner, item.getItemUnit()));
+    				// set item quantity
+    				((NumberPicker) findViewById(R.id.npQuantity)).setValue(item.getItemQuantity());
+    				// set item note
+    				((EditText) findViewById(R.id.etNote)).setText(item
+    						.getItemNote());
+    				// set item barcode
+    				((EditText) findViewById(R.id.etBarcode)).setText(item
+    						.getItemBarcode());
+            	}
             }
         }
 
@@ -172,7 +207,12 @@ public class ItemActivity extends Activity {
         String itemCategory = ((Spinner) findViewById(R.id.spCategory)).getSelectedItem().toString();
         String itemBarcode = ((EditText) findViewById(R.id.etBarcode)).getText().toString();
         Item item = new Item(itemName,itemQuantity,itemUnit, itemPrice, itemNote, itemCategory,itemBarcode);
-        db.addItem(listName,item);
+        if (editType.equals("shopping")){
+        	db.addShoppingItem(listName,item);
+        }
+        else {
+        	db.addItem(listName,item);
+        }
         db.close();
         Intent intent = new Intent();
         setResult(RESULT_OK, intent);
@@ -191,9 +231,33 @@ public class ItemActivity extends Activity {
 	 * delete the item from the database
 	 */
 	public void deleteItem(View view){
-		
+		DatabaseHandler db = new DatabaseHandler(this);
+		String itemName = ((EditText) findViewById(R.id.etItemName)).getText()
+				.toString();
+        if (editType.equals("shopping")){
+        	db.deleteShoppingItem(listName, itemName);
+        }
+        else {
+        	db.deleteItem(listName, itemName);
+        }
+
+		db.close();
+		Intent intent = new Intent();
+		setResult(RESULT_OK, intent);
+		Toast.makeText(this, itemName + " deleted", Toast.LENGTH_LONG).show();
+		finish();
 	}
-	
+	private int getIndex(Spinner spinner, String myString) {
+
+		int index = 0;
+
+		for (int i = 0; i < spinner.getCount(); i++) {
+			if (spinner.getItemAtPosition(i).equals(myString)) {
+				index = i;
+			}
+		}
+		return index;
+	}
 	
 
 }
