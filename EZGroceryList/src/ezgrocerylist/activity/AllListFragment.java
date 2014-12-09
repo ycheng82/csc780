@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,12 +39,17 @@ public class AllListFragment extends Fragment {
 		for (int i = 0; i < newList.size(); i++) {
 			LinearLayout llIngredients = (LinearLayout) rootView
 					.findViewById(R.id.layout_lists);
-			LayoutParams lparams = new LayoutParams(LayoutParams.WRAP_CONTENT,
+			LayoutParams lparams = new LayoutParams(LayoutParams.FILL_PARENT,
 					LayoutParams.WRAP_CONTENT);
-			lparams.setMargins(50, 0, 0, 0);
+			lparams.setMargins(0, 0, 0, 0);
 			final Button btn = new Button(this.getActivity());
 			// btn.setBackgroundColor(getResources().getColor(R.color.ingredient_btn));
-			btn.getBackground().setAlpha(30);
+			btn.getBackground().setAlpha(0);
+			GradientDrawable gd = new GradientDrawable();
+	        //gd.setColor(0xFF00FF00); // Changes this drawbale to use a single color instead of a gradient
+	        gd.setCornerRadius(5);
+	        gd.setStroke(1, 0xFF000000);
+	        btn.setBackgroundDrawable(gd);
 			btn.setLayoutParams(lparams);
 			btn.setText(newList.get(i));
 			btn.setOnClickListener(new View.OnClickListener() {

@@ -85,6 +85,7 @@ public class ListViewAdapter extends BaseExpandableListAdapter {
 			convertView = inflater.inflate(R.layout.children_item, null);
 			viewHolder.childrenNameTV = (TextView) convertView.findViewById(R.id.children_name);
 			viewHolder.childrenCB = (CheckBox) convertView.findViewById(R.id.children_cb);
+			viewHolder.childrenCB.setFocusable(false);
 			
 			convertView.setTag(viewHolder);
 		} else {
@@ -206,7 +207,7 @@ public class ListViewAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public boolean isChildSelectable(int groupPosition, int childPosition) {
-		return false;
+		return true;
 	}
 	
 

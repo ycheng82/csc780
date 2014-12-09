@@ -5,13 +5,13 @@
     android:gravity="center_horizontal"
     android:orientation="vertical" >
 
-    <Button
+    <!-- Button
         android:id="@+id/showBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
-        android:text="@string/label_edit_item" />
+        android:text="@string/label_edit_item" /-->
 
     <ExpandableListView
         android:id="@+id/expandable_list"

@@ -11,21 +11,21 @@
         android:layout_gravity="center"
         android:orientation="horizontal" >
 
-        <Button
+        <!-- Button
             android:id="@+id/showBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
-            android:text="@string/label_edit_item" />
+            android:text="@string/label_edit_item" /-->
 
-        <Button
+        <!-- Button
             android:id="@+id/shoppingBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
-            android:text="@string/label_shop_item" />
+            android:text="@string/label_shop_item" /-->
      </LinearLayout>
 
         <ExpandableListView

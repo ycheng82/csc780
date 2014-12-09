@@ -40,6 +40,7 @@
     <string name="action_email">Share by email</string>
     <string name="action_voice">Voice input</string>
     <string name="action_cloud">Cloud Search</string>
+    <string name="action_shopping">Cloud Search</string>
     <string name="hello_world">Hello world!</string>
     <string name="speech_prompt">Say something&#8230;</string>
     <string name="speech_not_supported">Sorry! Your device doesn\'t support speech input</string>

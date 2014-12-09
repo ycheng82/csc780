@@ -2,10 +2,11 @@ package ezgrocerylist.activity;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import com.ezgrocerylist.R;
 
-import ezgrocerylist.activity.AllListFragment.OnAllListSelectedListener;
+import ezgrocerylist.activity.PantryListFragment.OnAllListSelectedListener;
 import ezgrocerylist.slidingmenu.adapter.NavDrawerListAdapter;
 import ezgrocerylist.slidingmenu.model.NavDrawerItem;
 import ezgrocerylist.sql.DatabaseHandler;
@@ -207,9 +208,61 @@ public class PantryActivity extends ActionBarActivity implements
 		case R.id.action_settings:
 			// actionName.setText("setting");
 			return true;
+		case R.id.action_shopping:
+			// add selected items to shopping list
+			DetailListFragment fr = (DetailListFragment) getFragmentManager().findFragmentById(R.id.frame_container);
+			List<String> shoppingItems = fr.getShoppingItems();
+			addShoppingItems(shoppingItems);
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	private void addShoppingItems(List<String> shoppingItems) {
+		final List<String> checkedChildren = shoppingItems;
+		if (checkedChildren != null && !checkedChildren.isEmpty()) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("Type the name for your shopping list");
+
+			// Set up the input
+			final EditText input = new EditText(this);
+			// Specify the type of input expected; this, for example, sets the input
+			// as a password, and will mask the text
+			input.setInputType(InputType.TYPE_CLASS_TEXT);
+			builder.setView(input);
+
+			// Set up the buttons
+			builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					
+					ArrayList<Item> items = new ArrayList<Item>();
+					DatabaseHandler db = new DatabaseHandler(PantryActivity.this);
+					for (int i = 0;i<checkedChildren.size();i++){
+						Item item = db.getItem(listName,checkedChildren.get(i).split("	")[0]);
+						items.add(item);
+					}
+					//call db to add to shopping table
+					if (db.addShoppingItems(input.getText().toString(),items)){
+						Toast.makeText(PantryActivity.this, "Selected items added to shopping list "+input.getText().toString(),
+								Toast.LENGTH_LONG).show();
+					}
+
+				}
+			});
+			builder.setNegativeButton("Cancel",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+						}
+					});
+
+			builder.show();
+		}
+
+		
 	}
 
 	/***
@@ -245,8 +298,8 @@ public class PantryActivity extends ActionBarActivity implements
 			 * else{ fragment = new HomeFragment("Pantry"); }
 			 */
 			if (getAllLists() != null) {
-				fragment = new AllListFragment();
-				((AllListFragment) fragment).setListNames(getAllLists());
+				fragment = new PantryListFragment();
+				((PantryListFragment) fragment).setListNames(getAllLists());
 
 				//((AllListFragment) fragment).setListContents(getListContents());
 			} else {

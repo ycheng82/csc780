@@ -1041,4 +1041,54 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return db.update(TABLE_SHOPPING, values, KEY_SHOPPING_LIST_NAME + "=?", args);
 	}
 
+	public boolean addCatShopping(String pantryListName,String shoppingListName, String catName) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		ArrayList<Item> items = new ArrayList<Item>();
+		Cursor cursor = db.query(TABLE_ITEMS, new String[] { KEY_LIST_NAME,
+				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT,
+				KEY_ITEM_PRICE, KEY_ITEM_NOTE, KEY_ITEM_CATEGORY,
+				KEY_ITEM_BARCODE }, KEY_LIST_NAME + "=?"+ " AND "
+						+ KEY_ITEM_CATEGORY + "=?",
+				new String[] { pantryListName,catName }, null, null, null, null);
+		if (cursor != null && cursor.moveToFirst()) {
+			while (cursor.isAfterLast() == false) {
+				// Calllog is a class with list of fileds
+				Item item = new Item();
+				// item.setId(cursor.getLong(cursor.getColumnIndex(KEY_LIST_NAME)));
+				item.setItemName(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_NAME)));
+				item.setItemQuantity(cursor.getInt(cursor
+						.getColumnIndex(KEY_ITEM_QUANTITY)));
+				item.setItemUnit(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_UNIT)));
+				item.setItemPrice(cursor.getFloat(cursor
+						.getColumnIndex(KEY_ITEM_PRICE)));
+				item.setItemCategory(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_CATEGORY)));
+				item.setItemNote(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_NOTE)));
+				item.setItemBarcode(cursor.getString(cursor
+						.getColumnIndex(KEY_ITEM_BARCODE)));
+
+				items.add(item);
+				cursor.moveToNext();
+			}
+		}
+		cursor.close();
+		db.close();
+		return addShoppingItems(shoppingListName,items);
+	}
+
+	public int delteItems(String pantryListName, String groupName) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		return db.delete(TABLE_ITEMS, KEY_LIST_NAME + "=?" + " AND "
+				+ KEY_ITEM_CATEGORY + "=?", new String[] { pantryListName, groupName });
+	}
+
+	public int delteShoppingItems(String shoppingListName, String groupName) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		return db.delete(TABLE_SHOPPING, KEY_SHOPPING_LIST_NAME + "=?" + " AND "
+				+ KEY_ITEM_CATEGORY + "=?", new String[] { shoppingListName, groupName });
+	}
+
 }

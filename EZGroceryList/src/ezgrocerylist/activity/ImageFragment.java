@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 
 /**
  * ingredient fragment to show all recipe images
+ * use gallery view here
  * @author Ye
  *
  */
