@@ -24,10 +24,13 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Images.Media;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,42 +41,70 @@ import ezgrocerylist.sql.DatabaseHandler;
 
 /**
  * A fragment that launches the cover and introduction information of recipe.
+ * 
  * @author Ye
- *
+ * 
  */
 public class LaunchpadSectionFragment extends Fragment {
 	private String recipeName;
 	private Bitmap bitmap;
-	private View rootView ;
-    protected static final int GALLERY_PICTURE = 1;
-    protected static final int REQUEST_TAKE_PHOTO = 0;
-    private File photoFile = null;
-    private Intent pictureActionIntent;
-    private String selectedImagePath;
+	private View rootView;
+	protected static final int GALLERY_PICTURE = 1;
+	protected static final int REQUEST_TAKE_PHOTO = 0;
+	private File photoFile = null;
+	private Intent pictureActionIntent;
+	private String selectedImagePath;
 	private String mCurrentPhotoPath;
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_section_launchpad, container, false);
-        rootView.findViewById(R.id.ibCamera)
-        .setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            	startDialog();
-            }
-        });
 
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		rootView = inflater.inflate(R.layout.fragment_section_launchpad,
+				container, false);
+		rootView.findViewById(R.id.ibCamera).setOnClickListener(
+				new View.OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						startDialog();
+					}
+				});
 
-		TextView tvRecipeName = (TextView) rootView.findViewById(R.id.lbRecipeName);
+		TextView tvRecipeName = (TextView) rootView
+				.findViewById(R.id.lbRecipeName);
 		tvRecipeName.setText(recipeName);
 		// load recipe information from database if it exists
-		DatabaseHandler db = new DatabaseHandler(this.getActivity());
-		if (db.getRecipe(recipeName)||db.getCoverImage(recipeName) != null) {
+		final DatabaseHandler db = new DatabaseHandler(this.getActivity());
+		if (db.getRecipe(recipeName)) {
+			// load recipe description
+			final EditText etRecipeDes = (EditText) rootView
+					.findViewById(R.id.etRecipeDes);
+			etRecipeDes.addTextChangedListener(new TextWatcher() 
+			  {
+			            public void afterTextChanged(Editable s) {
+			            	//save recipe description
+			            	db.addRecipeDes(recipeName,etRecipeDes.getText().toString());
+			            	
+
+			            }
+			            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			            }
+			            public void onTextChanged(CharSequence s, int start, int before, int count) {
+			            }
+			        });
+			String recipeDes = db.getRecipeDes(recipeName);
+			if (recipeDes!=null){
+				etRecipeDes.setText(recipeDes);
+			}
+			else {
+				etRecipeDes.setText("add introduction your to recipe here");
+			}
+			
 			// load cover image
 			if (db.getCoverImage(recipeName) != null) {
 				try {
-					InputStream stream = this.getActivity().getContentResolver().openInputStream(
-							db.getCoverImage(recipeName));
+					InputStream stream = this.getActivity()
+							.getContentResolver()
+							.openInputStream(db.getCoverImage(recipeName));
 					bitmap = BitmapFactory.decodeStream(stream);
 					stream.close();
 					drawCover(bitmap);
@@ -85,17 +116,21 @@ public class LaunchpadSectionFragment extends Fragment {
 			}
 		}
 		db.close();
-        return rootView;
-    }
-    public void setRecipeName(String recipeName){
-    	this.recipeName = recipeName;
-    }
+		return rootView;
+	}
+
+	public void setRecipeName(String recipeName) {
+		this.recipeName = recipeName;
+	}
+
 	/**
 	 * draw cover image
-	 * @param bitmap bitmap image to draw
+	 * 
+	 * @param bitmap
+	 *            bitmap image to draw
 	 */
 	public void drawCover(Bitmap bitmap) {
-		
+
 		ImageButton btn = (ImageButton) rootView.findViewById(R.id.ibCamera);
 		int bwidth = bitmap.getWidth();
 		int bheight = bitmap.getHeight();
@@ -112,6 +147,7 @@ public class LaunchpadSectionFragment extends Fragment {
 		btn.setImageBitmap(newBitmap);
 
 	}
+
 	/**
 	 * call back after a picture is choosen from gallery or taken from camera
 	 */
@@ -125,12 +161,12 @@ public class LaunchpadSectionFragment extends Fragment {
 			}
 			// save cover image uri to database
 			DatabaseHandler db = new DatabaseHandler(this.getActivity());
-			//db.addCover(recipeName, data.getData().toString());
-			db.addImage(1,recipeName, data.getData().toString());
+			// db.addCover(recipeName, data.getData().toString());
+			db.addImage(1, recipeName, data.getData().toString());
 
 			try {
-				InputStream stream = this.getActivity().getContentResolver().openInputStream(
-						data.getData());
+				InputStream stream = this.getActivity().getContentResolver()
+						.openInputStream(data.getData());
 				bitmap = BitmapFactory.decodeStream(stream);
 				stream.close();
 				drawCover(bitmap);
@@ -145,18 +181,21 @@ public class LaunchpadSectionFragment extends Fragment {
 			if (resultCode == Activity.RESULT_OK) {
 				InputStream stream;
 				try {
-					stream = this.getActivity().getContentResolver().openInputStream(
-							Uri.fromFile(photoFile));
+					stream = this.getActivity().getContentResolver()
+							.openInputStream(Uri.fromFile(photoFile));
 					bitmap = BitmapFactory.decodeStream(stream);
 					// add image to gallery
 					// MediaStore.Images.Media.insertImage(getContentResolver(),
 					// bitmap, "" , "");
-					addImageToGallery(this.getActivity(), photoFile.getAbsolutePath(), "", "");
+					addImageToGallery(this.getActivity(),
+							photoFile.getAbsolutePath(), "", "");
 					// save cover image uri to database
 					DatabaseHandler db = new DatabaseHandler(this.getActivity());
-					//db.addCover(recipeName, Uri.fromFile(photoFile).toString());
+					// db.addCover(recipeName,
+					// Uri.fromFile(photoFile).toString());
 					// draw cover
-					db.addImage(1,recipeName, Uri.fromFile(photoFile).toString());
+					db.addImage(1, recipeName, Uri.fromFile(photoFile)
+							.toString());
 					drawCover(bitmap);
 					// save uri to database
 				} catch (FileNotFoundException e) {
@@ -165,12 +204,13 @@ public class LaunchpadSectionFragment extends Fragment {
 				}
 
 			} else if (resultCode == Activity.RESULT_CANCELED) {
-				Toast.makeText(this.getActivity().getApplicationContext(), "Cancelled",
-						Toast.LENGTH_SHORT).show();
+				Toast.makeText(this.getActivity().getApplicationContext(),
+						"Cancelled", Toast.LENGTH_SHORT).show();
 			}
 		}
 
 	}
+
 	public Uri addImageToGallery(Context context, String filepath,
 			String title, String description) {
 		ContentValues values = new ContentValues();
@@ -183,6 +223,7 @@ public class LaunchpadSectionFragment extends Fragment {
 		return context.getContentResolver().insert(Media.EXTERNAL_CONTENT_URI,
 				values);
 	}
+
 	/**
 	 * callback when click the add cover for a recipe
 	 */
@@ -195,7 +236,8 @@ public class LaunchpadSectionFragment extends Fragment {
 	 * camera
 	 */
 	private void startDialog() {
-		AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(this.getActivity());
+		AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(
+				this.getActivity());
 		myAlertDialog.setTitle("Upload Pictures Option");
 		myAlertDialog.setMessage("How do you want to set your picture?");
 
@@ -225,13 +267,15 @@ public class LaunchpadSectionFragment extends Fragment {
 				});
 		myAlertDialog.show();
 	}
+
 	/**
 	 * start intent for taking photo using android camera
 	 */
 	private void dispatchTakePictureIntent() {
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		// Ensure that there's a camera activity to handle the intent
-		if (takePictureIntent.resolveActivity(this.getActivity().getPackageManager()) != null) {
+		if (takePictureIntent.resolveActivity(this.getActivity()
+				.getPackageManager()) != null) {
 			// Create the File where the photo should go
 
 			try {
@@ -247,8 +291,10 @@ public class LaunchpadSectionFragment extends Fragment {
 			}
 		}
 	}
+
 	/**
 	 * create an unique file to save image
+	 * 
 	 * @return image file
 	 * @throws IOException
 	 */
@@ -265,6 +311,5 @@ public class LaunchpadSectionFragment extends Fragment {
 		mCurrentPhotoPath = "file:" + image.getAbsolutePath();
 		return image;
 	}
-	
 
 }

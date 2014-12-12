@@ -41,15 +41,19 @@
     <string name="action_voice">Voice input</string>
     <string name="action_cloud">Cloud Search</string>
     <string name="action_shopping">Cloud Search</string>
+    <string name="recipe_context_edit">Edit</string>
+    <string name="recipe_context_rename">Rename</string>
+    <string name="recipe_context_delete">Delete</string>
     <string name="hello_world">Hello world!</string>
     <string name="speech_prompt">Say something&#8230;</string>
     <string name="speech_not_supported">Sorry! Your device doesn\'t support speech input</string>
     <string name="tap_on_mic">Tap on mic to speak</string>
-    
     <string name="dummy_section_text">Section %1d is just a dummy section.</string>
-
     <string name="demo_external_activity">Demo External Activity</string>
     <string name="demo_collection">Demo Collection</string>
+    
+    <string name="tv_author">EZ Grocery List is developed by Ye Cheng, who is currently a graduate student at SFSU.
+         This android app is developed as a course project for CSC780.</string>
 
     <string-array name="pantry_menu">
         <item></item>
@@ -82,11 +86,10 @@
         <item>sea food</item>
         <item>new</item>
     </string-array>
-    
 
     <string name="drawer_open">Slider Menu Opened</string>
     <string name="drawer_close">Slider Menu Closed</string>
-     
+
     <!-- Nav Drawer Menu Items -->
     <string-array name="nav_drawer_items">
         <item>How to Use</item>
@@ -97,7 +100,7 @@
         <item>Remove</item>
         <item>Add to Shopping</item>
     </string-array>
-     
+
     <!-- Nav Drawer List Item Icons -->
     <!-- Keep them in order as the titles are in -->
     <array name="nav_drawer_icons">
@@ -109,9 +112,8 @@
         <item>@drawable/main_icon</item>
         <item>@drawable/main_icon</item>
     </array>
-     
+
     <!-- Content Description -->
     <string name="desc_list_item_icon">Item Icon</string>
-    
-    
+
 </resources>

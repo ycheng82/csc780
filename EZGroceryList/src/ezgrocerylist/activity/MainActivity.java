@@ -200,7 +200,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener,
 					break;
 				case "About":
 					Intent aboutIntent = new Intent(MainActivity.this,
-							PantryActivity.class);
+							InforActivity.class);
 					startActivity(aboutIntent);
 					break;
 				}

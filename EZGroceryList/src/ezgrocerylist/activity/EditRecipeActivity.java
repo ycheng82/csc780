@@ -189,11 +189,11 @@ public class EditRecipeActivity extends FragmentActivity implements
 				stepsFragment.setRecipeName(recipeName);
 				return stepsFragment;
 			
-			//case 3:
-				// show step fragment
-				//ImageFragment imageFragment = new ImageFragment();
-				//imageFragment.setRecipeName(recipeName);
-				//return imageFragment;
+			case 3:
+				// show image fragment
+				ImageFragment imageFragment = new ImageFragment();
+				imageFragment.setRecipeName(recipeName);
+				return imageFragment;
 
 			default:
 				// The other sections of the app are dummy placeholders.
@@ -252,7 +252,7 @@ public class EditRecipeActivity extends FragmentActivity implements
 	/**
 	 * delete this recipe from database
 	 */
-	public void clickDelete(View view){
+	/*public void clickDelete(View view){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("You are going to delete the recipe " + recipeName + ". Are you sure?");
 
@@ -284,6 +284,6 @@ public class EditRecipeActivity extends FragmentActivity implements
 			return true;
 		}
 		return false;
-	}
+	}*/
 
 }

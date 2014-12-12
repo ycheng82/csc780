@@ -11,6 +11,7 @@ import ezgrocerylist.sql.DatabaseHandler;
 import ezgrocerylist.sql.Item;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
@@ -364,6 +365,9 @@ public class RecipeActivity extends ActionBarActivity implements
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				listName = input.getText().toString();
+				//save recipe here
+				DatabaseHandler db = new DatabaseHandler(((Dialog) dialog).getContext());
+				db.addRecipe(listName);
 				//Intent intent = new Intent(RecipeActivity.this,RecipeEditActivity.class);
 				//intent.putExtra("recipename", listName);
 				//startActivityForResult(intent, 0);

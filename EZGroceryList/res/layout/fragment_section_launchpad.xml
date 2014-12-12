@@ -42,7 +42,7 @@
 	        android:textSize="25sp" />
 
 	    <EditText
-	        android:id="@+id/editText1"
+	        android:id="@+id/etRecipeDes"
 	        android:layout_width="300dp"
 	        android:layout_height="wrap_content"
 	        android:layout_gravity="center"
@@ -55,14 +55,14 @@
 	        <requestFocus />
 	    </EditText>
 
-	    <Button
+	    <!-- Button
 	        android:id="@+id/button1"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_gravity="center"
 	        android:layout_marginTop="40dp"
 	        android:text="@string/button_delete" 
-	        android:onClick="clickDelete"/>
+	        android:onClick="clickDelete"/-->
 
     </LinearLayout>
 

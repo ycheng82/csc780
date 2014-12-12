@@ -10,10 +10,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.text.Editable;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-	private static final int DATABASE_VERSION = 20;
+	private static final int DATABASE_VERSION = 21;
 
 	private static final String DATABASE_NAME = "EZgrocery";
 
@@ -22,6 +23,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String TABLE_IMAGES = "images";
 	private static final String TABLE_STEPS = "steps";
 	private static final String TABLE_SHOPPING = "shopping";
+	private static final String TABLE_RECIPE_DES = "recipe_description";
 
 	private static final String KEY_LIST_NAME = "listName";
 	private static final String KEY_ITEM_NAME = "itemName";
@@ -37,6 +39,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String KEY_RECIPE_IMAGE = "recipeImage";
 	private static final String KEY_STEP_ID = "stepId";
 	private static final String KEY_STEP_DETAIL = "stepDetail";
+	private static final String KEY_RECIPE_DES = "recipeDescription";
 	
 	private static final String KEY_SHOPPING_LIST_NAME = "shoppingListName";
 
@@ -77,6 +80,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_ITEM_NOTE + " TEXT," + KEY_ITEM_CATEGORY + " TEXT,"
 				+ KEY_ITEM_BARCODE + " TEXT" + ")";
 		db.execSQL(CREATE_TAGS_TABLE_SHOPPING);
+		String CREATE_TAGS_TABLE_RECIPE_DES = "CREATE TABLE " + TABLE_RECIPE_DES + "("
+				+ KEY_RECIPE_NAME + " TEXT NOT NULL," 
+				+ KEY_RECIPE_DES + " TEXT" + ")";
+		db.execSQL(CREATE_TAGS_TABLE_RECIPE_DES);
 	}
 
 	@Override
@@ -86,6 +93,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_STEPS);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_IMAGES);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_SHOPPING);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECIPE_DES);
 		onCreate(db);
 	}
 
@@ -312,21 +320,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getReadableDatabase();
 		ArrayList<String> names = new ArrayList<String>();
 		// check recipe item table
-		Cursor cursor = db.query(TABLE_RECIPES,
+		Cursor cursor = db.query(TABLE_RECIPE_DES,
 				new String[] { KEY_RECIPE_NAME }, null, null, null, null, null);
-		if (cursor != null && cursor.moveToFirst()) {
-			while (cursor.isAfterLast() == false) {
-				String name = cursor.getString(cursor
-						.getColumnIndex(KEY_RECIPE_NAME));
-				if (!names.contains(name)) {
-					names.add(name);
-				}
-				cursor.moveToNext();
-			}
-		}
-		// check recipe image table
-		cursor = db.query(TABLE_IMAGES, new String[] { KEY_RECIPE_NAME }, null,
-				null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			while (cursor.isAfterLast() == false) {
 				String name = cursor.getString(cursor
@@ -379,7 +374,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 */
 	public boolean getRecipe(String recipeName) {
 		SQLiteDatabase db = this.getReadableDatabase();
-		String Query = "SELECT * FROM " + TABLE_RECIPES + " WHERE "
+		String Query = "SELECT * FROM " + TABLE_RECIPE_DES + " WHERE "
 				+ KEY_RECIPE_NAME + " = '" + recipeName + "'";
 		Cursor cursor = db.rawQuery(Query, null);
 		if (cursor.moveToFirst()) {
@@ -736,7 +731,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				new String[] { recipeName });
 		int n3 = db.delete(TABLE_RECIPES, KEY_RECIPE_NAME + "=?",
 				new String[] { recipeName });
-		return (n1+n2+n3)> 0;
+		int n4 = db.delete(TABLE_RECIPE_DES, KEY_RECIPE_NAME + "=?",
+				new String[] { recipeName });
+		return (n1+n2+n4)> 0;
 	}
 
 	public ArrayList<Item> getCategoryContents(String listName, String categoryName) {
@@ -1041,6 +1038,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return db.update(TABLE_SHOPPING, values, KEY_SHOPPING_LIST_NAME + "=?", args);
 	}
 
+	/**
+	 * add items from a category in a pantry list to a shopping list
+	 * @param pantryListName
+	 * @param shoppingListName
+	 * @param catName
+	 * @return true if added, false if not added
+	 */
 	public boolean addCatShopping(String pantryListName,String shoppingListName, String catName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		ArrayList<Item> items = new ArrayList<Item>();
@@ -1079,16 +1083,128 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return addShoppingItems(shoppingListName,items);
 	}
 
+	/**
+	 * delete items from a category in a pantry list
+	 * @param pantryListName
+	 * @param groupName
+	 * @return
+	 */
 	public int delteItems(String pantryListName, String groupName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		return db.delete(TABLE_ITEMS, KEY_LIST_NAME + "=?" + " AND "
 				+ KEY_ITEM_CATEGORY + "=?", new String[] { pantryListName, groupName });
 	}
 
+	/**
+	 * delete items from a category in a shopping list
+	 * @param shoppingListName
+	 * @param groupName
+	 * @return
+	 */
 	public int delteShoppingItems(String shoppingListName, String groupName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		return db.delete(TABLE_SHOPPING, KEY_SHOPPING_LIST_NAME + "=?" + " AND "
 				+ KEY_ITEM_CATEGORY + "=?", new String[] { shoppingListName, groupName });
+	}
+
+	/**
+	 * get recipe description for a give recipe
+	 * @param recipeName
+	 * @return
+	 */
+	public String getRecipeDes(String recipeName) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		String recipeDes = null;
+		Cursor cursor = db.query(TABLE_RECIPE_DES,
+				new String[] { KEY_RECIPE_NAME,
+				KEY_RECIPE_DES},
+				KEY_RECIPE_NAME + "=?" ,
+				new String[] { recipeName}, null, null, null);
+		if (cursor != null && cursor.moveToFirst()) {
+			recipeDes =cursor.getString(cursor.getColumnIndex(KEY_RECIPE_DES));
+		}
+		cursor.close();
+		db.close();
+		return recipeDes;
+	}
+
+	/**
+	 * add recipe to the recipe description table, update the table if the given recipe name
+	 * is already in the table
+	 * @param listName
+	 * @return 
+	 */
+	public int addRecipe(String recipeName) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		String Query = "SELECT * FROM " + TABLE_RECIPE_DES + " WHERE "
+				+ KEY_RECIPE_NAME + " = '" + recipeName + "'";
+		Cursor cursor = db.rawQuery(Query, null);
+		if (cursor.moveToFirst()) {
+			// record exists
+			values.putNull(KEY_RECIPE_DES);
+			String[] args = new String[1];
+			args[0] = recipeName;
+			return db.update(TABLE_RECIPE_DES, values, KEY_RECIPE_NAME + "=?", args);
+		} else {
+			// record not found
+			values.put(KEY_RECIPE_NAME, recipeName);
+			values.putNull(KEY_RECIPE_DES);
+			db.insert(TABLE_RECIPE_DES, null, values);
+			db.close();
+			return 1;
+
+		}
+		
+	}
+
+	/**
+	 * add description to a recipe
+	 * @param recipeName
+	 * @param text
+	 */
+	public int addRecipeDes(String recipeName, String recipeDes) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		String Query = "SELECT * FROM " + TABLE_RECIPE_DES + " WHERE "
+				+ KEY_RECIPE_NAME + " = '" + recipeName + "'";
+		Cursor cursor = db.rawQuery(Query, null);
+		if (cursor.moveToFirst()) {
+			// record exists
+			values.put(KEY_RECIPE_DES,recipeDes);
+			
+			String[] args = new String[1];
+			args[0] = recipeName;
+			return db.update(TABLE_RECIPE_DES, values, KEY_RECIPE_NAME + "=?", args);
+		} else {
+			// record not found
+			values.put(KEY_RECIPE_NAME, recipeName);
+			values.put(KEY_RECIPE_DES,recipeDes);
+			db.insert(TABLE_RECIPE_DES, null, values);
+			db.close();
+			return 1;
+
+		}
+		
+	}
+
+	/**
+	 * change the name for a recipe
+	 * @param oldRecipeName old recipe name
+	 * @param newRecipeName new recipe name
+	 * @return number of records changed
+	 */
+	public int changeRecipeName(String oldRecipeName, String newRecipeName) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		ContentValues values = new ContentValues();
+		values.put(KEY_RECIPE_NAME, newRecipeName);
+		String[] args = new String[1];
+		args[0] = oldRecipeName;
+		int n1 = db.update(TABLE_RECIPE_DES, values, KEY_RECIPE_NAME + "=?", args);
+		int n2 = db.update(TABLE_STEPS, values, KEY_RECIPE_NAME + "=?", args);
+		int n3 = db.update(TABLE_IMAGES, values, KEY_RECIPE_NAME + "=?", args);
+		int n4 = db.update(TABLE_RECIPES, values, KEY_RECIPE_NAME + "=?", args);
+		return n1+n2+n3+n4;
 	}
 
 }
