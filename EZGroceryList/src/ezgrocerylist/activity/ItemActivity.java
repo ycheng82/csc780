@@ -29,7 +29,7 @@ public class ItemActivity extends Activity implements OnItemSelectedListener{
 	private NumberPicker npQuantity;
 	private String listName, barcode,itemName,itemQuantity,editType;
 	public final static String TAG = "storage";
-	private Spinner spinner;
+	private Spinner spinner,spCategory;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,35 +60,14 @@ public class ItemActivity extends Activity implements OnItemSelectedListener{
         // Loading spinner data from database
         loadSpinnerData();
         
-   
-		//set up the values for item category using spinner
-        Spinner spCategory = (Spinner) findViewById(R.id.spCategory);
-        ArrayAdapter<CharSequence> adapterCategory = ArrayAdapter.createFromResource(this,
-                R.array.item_category, android.R.layout.simple_spinner_item);
-        adapterCategory.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spCategory.setAdapter(adapterCategory);
-        spCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            /**
-             * Called when a new category is selected (in the Spinner)
-             */
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View view, 
-			            int pos, long id) {
-					// TODO Auto-generated method stub
-			        String selected = parent.getItemAtPosition(pos).toString();
-
-			        if(selected.equals("new"))
-			        {
-			        	//addCategory();
-			        	//NOT COMPLETE YET
-			        }
-
-				}            
-
-                public void onNothingSelected(AdapterView<?> parent) {
-                    // Do nothing, just another required interface callback
-                }
-        });
+        // Spinner element
+        spCategory = (Spinner) findViewById(R.id.spCategory);
+ 
+        // Spinner click listener
+        spCategory.setOnItemSelectedListener(this);
+ 
+        // Loading spinner data from database
+        loadSpinnerCatData();   
         
         //get list name from intent
         Bundle extras = getIntent().getExtras();
@@ -145,7 +124,6 @@ public class ItemActivity extends Activity implements OnItemSelectedListener{
 
 	/**
 	 * method to add a new unit when click the "other" in the unit spinner
-	 * NOT COMPLETE YET
 	 */
 	public void addUnit() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -275,6 +253,28 @@ public class ItemActivity extends Activity implements OnItemSelectedListener{
         // attaching data adapter to spinner
         spinner.setAdapter(dataAdapter);
     }	
+    
+    /**
+     * Function to load the spinner data for category from SQLite database
+     * */
+    private void loadSpinnerCatData() {
+        // database handler
+        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+        db.addDefaultCategory();
+        // Spinner Drop down elements
+        List<String> lables = db.getAllCategory();
+ 
+        // Creating adapter for spinner
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, lables);
+ 
+        // Drop down layout style - list view with radio button
+        dataAdapter
+                .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+ 
+        // attaching data adapter to spinner
+        spCategory.setAdapter(dataAdapter);
+    }	
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position,
             long id) {
@@ -288,7 +288,10 @@ public class ItemActivity extends Activity implements OnItemSelectedListener{
         	//add new unit
         	addUnit();
         }
- 
+        if (label.equals ("other")){
+        	//add new unit
+        	addCategory();
+        }
     }
  
     @Override
@@ -296,4 +299,44 @@ public class ItemActivity extends Activity implements OnItemSelectedListener{
         // TODO Auto-generated method stub
  
     }
+    
+	/**
+	 * method to add a new category when click the "other" in the unit spinner
+	 * NOT COMPLETE YET
+	 */
+	public void addCategory() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("The category name you want to add");
+
+		// Set up the input
+		final EditText input = new EditText(this);
+		// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+		input.setInputType(InputType.TYPE_CLASS_TEXT);
+		builder.setView(input);
+
+		// Set up the buttons
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { 
+		    @Override
+		    public void onClick(DialogInterface dialog, int which) {
+		    	// add (input.getText().toString()
+                // database handler
+                DatabaseHandler db = new DatabaseHandler(
+                        getApplicationContext());
+
+                // inserting new label into database
+                db.insertCategory(input.getText().toString());
+
+                // loading spinner with newly added data
+                loadSpinnerCatData();
+		    }
+		});
+		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		    @Override
+		    public void onClick(DialogInterface dialog, int which) {
+		        dialog.cancel();
+		    }
+		});
+
+		builder.show();
+	}
 }

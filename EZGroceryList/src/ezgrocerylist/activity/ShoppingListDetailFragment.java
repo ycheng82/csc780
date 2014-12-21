@@ -124,24 +124,33 @@ public class ShoppingListDetailFragment extends Fragment {
 		DatabaseHandler db = new DatabaseHandler(this.getActivity());
 		dataList.clear();
 		groups = db.getShoppingListCategory(listName);
+		//if nothing to show, return to pantry activity
+		if (groups == null){
+			Intent shoppingIntent = new Intent(this.getActivity(),
+					ShoppingActivity.class);
+			startActivity(shoppingIntent);
+		}
+		else {
+			// children = db.getListContents(listName);
+			for (int i = 0; i < groups.length; i++) {
+				List<Item> list = db.getShoppingCategoryContents(listName, groups[i]);
+				children = list.toArray(new Item[list.size()]);
+				List<ChildrenItem> childList = new ArrayList<ChildrenItem>();
+				for (int j = 0; j < children.length; j++) {
 
-		// children = db.getListContents(listName);
-		for (int i = 0; i < groups.length; i++) {
-			List<Item> list = db.getShoppingCategoryContents(listName, groups[i]);
-			children = list.toArray(new Item[list.size()]);
-			List<ChildrenItem> childList = new ArrayList<ChildrenItem>();
-			for (int j = 0; j < children.length; j++) {
+					childList.add(new ChildrenItem(children[j].getItemName()
+							+ "			" + children[j].getItemQuantity() + "			"
+							+ children[j].getItemUnit(), children[j].getItemName()
+							+ "			" + children[j].getItemQuantity() + "			"
+							+ children[j].getItemUnit()));
+				}
+				GroupItem groupItem = new GroupItem(groups[i], groups[i], childList);
+				dataList.add(groupItem);
 
-				childList.add(new ChildrenItem(children[j].getItemName()
-						+ "			" + children[j].getItemQuantity() + "			"
-						+ children[j].getItemUnit(), children[j].getItemName()
-						+ "			" + children[j].getItemQuantity() + "			"
-						+ children[j].getItemUnit()));
 			}
-			GroupItem groupItem = new GroupItem(groups[i], groups[i], childList);
-			dataList.add(groupItem);
 
 		}
+
 
 	}
 

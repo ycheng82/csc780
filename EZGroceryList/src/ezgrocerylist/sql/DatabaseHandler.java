@@ -14,7 +14,7 @@ import android.text.Editable;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-	private static final int DATABASE_VERSION = 26;
+	private static final int DATABASE_VERSION = 27;
 
 	private static final String DATABASE_NAME = "EZgrocery";
 
@@ -25,6 +25,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String TABLE_SHOPPING = "shopping";
 	private static final String TABLE_RECIPE_DES = "recipe_description";
 	private static final String TABLE_UNIT = "item_unit";
+	private static final String TABLE_CATEGORY = "item_category";
 
 	private static final String KEY_LIST_NAME = "listName";
 	private static final String KEY_ITEM_NAME = "itemName";
@@ -46,6 +47,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	private static final String KEY_UNIT_ID = "unitId";
 	private static final String KEY_UNIT_NAME = "unitName";
+	
+	private static final String KEY_CATEGORY_ID = "categoryId";
+	private static final String KEY_CATEGORY_NAME = "categoryName";
 
 	public DatabaseHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -93,29 +97,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ "(" + KEY_UNIT_ID + " INTEGER PRIMARY KEY," + KEY_UNIT_NAME
 				+ " TEXT)";
 		db.execSQL(CREATE_CATEGORIES_TABLE_UNIT);
+		
+		String CREATE_CATEGORIES_TABLE_CATEGORY = "CREATE TABLE " + TABLE_CATEGORY
+				+ "(" + KEY_CATEGORY_ID + " INTEGER PRIMARY KEY," + KEY_CATEGORY_NAME
+				+ " TEXT)";
+		db.execSQL(CREATE_CATEGORIES_TABLE_CATEGORY);
 	}
 
-	public void addDefaultUnit() {
 
-		SQLiteDatabase db = this.getWritableDatabase();
-		ContentValues values = new ContentValues();
-
-		String[] unit = { "ea", "lb", "kg", "g", "box", "bag", "new" };
-
-		Cursor cursor = db.query(TABLE_UNIT, new String[] {KEY_UNIT_ID,KEY_UNIT_NAME}, 
-				KEY_UNIT_NAME + "=?" ,
-				new String[] { "ea"}, null, null,
-				null, null);
-		if (!cursor.moveToFirst()) {
-			for (int i = 0; i < unit.length; i++) {
-				values.put(KEY_UNIT_ID, i + 1);
-				values.put(KEY_UNIT_NAME, unit[i]);
-				db.insert(TABLE_UNIT, null, values);
-
-			}
-			db.close();
-		}
-	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -126,6 +115,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_SHOPPING);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECIPE_DES);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_UNIT);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORY);
 		onCreate(db);
 	}
 
@@ -651,7 +641,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			uCats = new HashSet<>(cats);
 			// Log.d("showList","#category: " + uCats.size());
 		}
-		return uCats.toArray(new String[uCats.size()]);
+		if (uCats==null){
+			return null;
+		}
+		else {
+			return uCats.toArray(new String[uCats.size()]);
+		}
+		
 	}
 
 	/**
@@ -911,7 +907,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			uCats = new HashSet<>(cats);
 			// Log.d("showList","#category: " + uCats.size());
 		}
-		return uCats.toArray(new String[uCats.size()]);
+		if (uCats==null){
+			return null;
+		}
+		else {
+			return uCats.toArray(new String[uCats.size()]);
+		}
+		
 	}
 
 	/**
@@ -1328,5 +1330,100 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		// returning lables
 		return units;
+	}
+	
+	/**
+	 * add default unit to the database if it does not exist
+	 */
+	public void addDefaultUnit() {
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+
+		String[] unit = { "ea", "lb", "kg", "g", "box", "bag", "new" };
+
+		Cursor cursor = db.query(TABLE_UNIT, new String[] {KEY_UNIT_ID,KEY_UNIT_NAME}, 
+				KEY_UNIT_NAME + "=?" ,
+				new String[] { "ea"}, null, null,
+				null, null);
+		if (!cursor.moveToFirst()) {
+			for (int i = 0; i < unit.length; i++) {
+				values.put(KEY_UNIT_ID, i + 1);
+				values.put(KEY_UNIT_NAME, unit[i]);
+				db.insert(TABLE_UNIT, null, values);
+
+			}
+			db.close();
+		}
+	}
+	/**
+	 * add default category to the database if it does not exist
+	 */
+	public void addDefaultCategory() {
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+
+		String[] category = {"bread","cereal","meat","dairy","product","sea food","other"};
+
+		Cursor cursor = db.query(TABLE_CATEGORY, new String[] {KEY_CATEGORY_ID,KEY_CATEGORY_NAME}, 
+				KEY_CATEGORY_NAME + "=?" ,
+				new String[] { "bread"}, null, null,
+				null, null);
+		if (!cursor.moveToFirst()) {
+			for (int i = 0; i < category.length; i++) {
+				values.put(KEY_CATEGORY_ID, i + 1);
+				values.put(KEY_CATEGORY_NAME, category[i]);
+				db.insert(TABLE_CATEGORY, null, values);
+
+			}
+			db.close();
+		}
+		
+	}
+
+	/**
+	 * get all category from the database
+	 * @return a list of all category
+	 */
+	public List<String> getAllCategory() {
+		List<String> category = new ArrayList<String>();
+
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY;
+
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+
+		// looping through all rows and adding to list
+		if (cursor.moveToFirst()) {
+			do {
+				category.add(cursor.getString(1));
+			} while (cursor.moveToNext());
+		}
+
+		// closing connection
+		cursor.close();
+		db.close();
+
+		// returning lables
+		return category;
+	}
+
+	
+	/**
+	 * Inserting new category into unit table
+	 * @param string of category to insert
+	 */
+	public void insertCategory(String category) {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(KEY_CATEGORY_NAME, category);
+
+		// Inserting Row
+		db.insert(TABLE_CATEGORY, null, values);
+		db.close(); // Closing database connection
+		
 	}
 }
