@@ -80,7 +80,7 @@ public class StepActivity extends Activity {
 		db.close();
 		Intent intent = new Intent();
 		setResult(RESULT_OK, intent);
-		Toast.makeText(this, "Step saved", Toast.LENGTH_LONG).show();
+		Toast.makeText(this, "Step saved", Toast.LENGTH_SHORT).show();
 		finish();
 	}
 
@@ -102,7 +102,7 @@ public class StepActivity extends Activity {
 		db.close();
 		Intent intent = new Intent();
 		setResult(RESULT_OK, intent);
-		Toast.makeText(this, "Step deleted", Toast.LENGTH_LONG).show();
+		Toast.makeText(this, "Step deleted", Toast.LENGTH_SHORT).show();
 		finish();
 	}
 

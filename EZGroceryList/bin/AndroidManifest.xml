@@ -32,7 +32,8 @@
         </activity>
         <activity
             android:name="ezgrocerylist.activity.InforActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.Infor" />
 
@@ -41,7 +42,8 @@
         </activity>
         <activity
             android:name="ezgrocerylist.activity.PantryActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.Pantry" />
 
@@ -50,7 +52,8 @@
         </activity>
         <activity
             android:name="ezgrocerylist.activity.ItemActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.Item" />
 
@@ -59,7 +62,8 @@
         </activity>
         <activity
             android:name="ezgrocerylist.activity.BarcodeActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.Barcode" />
 
@@ -68,7 +72,8 @@
         </activity>
         <activity
             android:name="ezgrocerylist.activity.VoiceActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.Voice" />
 
@@ -77,7 +82,8 @@
         </activity>
         <activity
             android:name="ezgrocerylist.activity.PantryActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.Pantry" />
 
@@ -86,7 +92,8 @@
         </activity>
         <activity
             android:name="ezgrocerylist.activity.RecipeActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.Recipe" />
 
@@ -95,7 +102,8 @@
         </activity>
         <activity
             android:name="ezgrocerylist.activity.IngredientActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.Ingredient" />
 
@@ -104,7 +112,8 @@
         </activity>
         <activity
             android:name="ezgrocerylist.activity.RecipeEditActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.RecipeEdit" />
 
@@ -113,7 +122,8 @@
         </activity>
         <activity
             android:name="ezgrocerylist.activity.EditRecipeActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.RecipeEdit" />
 
@@ -122,7 +132,8 @@
         </activity>
         <activity
             android:name="ezgrocerylist.activity.CollectionActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.RecipeEdit" />
 
@@ -131,7 +142,8 @@
         </activity>
         <activity
             android:name="ezgrocerylist.activity.StepActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.StepEdit" />
 
@@ -140,7 +152,8 @@
         </activity>
         <activity
             android:name="ezgrocerylist.activity.ShoppingActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.Shopping" />
 
@@ -149,9 +162,20 @@
         </activity>
         <activity
             android:name="ezgrocerylist.activity.AuthorActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.Author" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+                <activity
+            android:name="ezgrocerylist.activity.SettingActivity"
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.Setting" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

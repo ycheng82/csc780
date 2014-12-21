@@ -202,7 +202,11 @@ public class ItemActivity extends Activity {
         String itemName = ((EditText) findViewById(R.id.etItemName)).getText().toString();
         int itemQuantity = ((NumberPicker) findViewById(R.id.npQuantity)).getValue();
         String itemUnit = ((Spinner) findViewById(R.id.spUnit)).getSelectedItem().toString();
-        float itemPrice = Float.parseFloat(((EditText) findViewById(R.id.etPrice)).getText().toString());
+        float itemPrice = 0;
+        String temp =((EditText) findViewById(R.id.etPrice)).getText().toString();
+        if (!temp.equals("")){
+        	itemPrice = Float.parseFloat(((EditText) findViewById(R.id.etPrice)).getText().toString());
+        }
         String itemNote = ((EditText) findViewById(R.id.etNote)).getText().toString();
         String itemCategory = ((Spinner) findViewById(R.id.spCategory)).getSelectedItem().toString();
         String itemBarcode = ((EditText) findViewById(R.id.etBarcode)).getText().toString();
@@ -216,7 +220,7 @@ public class ItemActivity extends Activity {
         db.close();
         Intent intent = new Intent();
         setResult(RESULT_OK, intent);
-        Toast.makeText(this, "Item saved", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Item saved", Toast.LENGTH_SHORT).show();
         finish();
 	}
 	
@@ -244,7 +248,7 @@ public class ItemActivity extends Activity {
 		db.close();
 		Intent intent = new Intent();
 		setResult(RESULT_OK, intent);
-		Toast.makeText(this, itemName + " deleted", Toast.LENGTH_LONG).show();
+		Toast.makeText(this, itemName + " deleted", Toast.LENGTH_SHORT).show();
 		finish();
 	}
 	private int getIndex(Spinner spinner, String myString) {

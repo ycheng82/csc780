@@ -176,7 +176,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener,
 				Toast.makeText(
 						MainActivity.this,
 						"Switch to " + txtView.getText().toString() + " screen",
-						Toast.LENGTH_LONG).show();
+						Toast.LENGTH_SHORT).show();
 				switch (txtView.getText().toString()) {
 				case "Pantry List":
 					Intent pantryIntent = new Intent(MainActivity.this,
@@ -194,9 +194,9 @@ public class MainActivity extends Activity implements OnItemSelectedListener,
 					startActivity(shoppingIntent);
 					break;
 				case "Setting":
-					// Intent intent= new Intent(MainActivity.this,
-					// PantryActivity.class);
-					// startActivity(intent);
+					Intent settingIntent= new Intent(MainActivity.this,
+					SettingActivity.class);
+					startActivity(settingIntent);
 					break;
 				case "About":
 					Intent aboutIntent = new Intent(MainActivity.this,

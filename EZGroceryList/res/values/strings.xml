@@ -52,8 +52,15 @@
     <string name="demo_external_activity">Demo External Activity</string>
     <string name="demo_collection">Demo Collection</string>
     
-    <string name="tv_author">EZ Grocery List is developed by Ye Cheng, who is currently a graduate student at SFSU.
-         This android app is developed as a course project for CSC780.</string>
+    <string name="tv_author">© Ye Cheng. All rights reserved.</string>
+    <string name="tv_version">v1.1.1</string>
+    <string name="tv_thanks">Special thanks to</string>
+    <string name="tv_thanks_Ye">Ye Cheng (EZ Grocery List designer and developer)</string>
+    <string name="tv_thanks_Puder">Professor Arno Puder (SFSU)</string>
+    <string name="tv_thanks_final">And finally, a big thank you to</string>
+    <string name="tv_thanks_beta">Users of EZ Grocery List</string>
+    
+    <string name="tv_setting">Will be available in next release</string>
 
     <string-array name="pantry_menu">
         <item></item>
@@ -96,9 +103,9 @@
         <item>Open List</item>
         <item>New List</item>
         <item>Change Name</item>
-        <item>Category</item>
+        <!-- item>Category</item-->
         <item>Remove</item>
-        <item>Add to Shopping</item>
+        <!-- item>Add to Shopping</item-->
     </string-array>
 
     <!-- Nav Drawer List Item Icons -->

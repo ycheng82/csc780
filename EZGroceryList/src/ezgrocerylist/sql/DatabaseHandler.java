@@ -1206,5 +1206,30 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		int n4 = db.update(TABLE_RECIPES, values, KEY_RECIPE_NAME + "=?", args);
 		return n1+n2+n3+n4;
 	}
+	/**
+	 * get the names of all pantry list
+	 * 
+	 * @return pantry list names as an arraylist of string
+	 */
+	public ArrayList<String> getPantryList() {
+		SQLiteDatabase db = this.getReadableDatabase();
+		ArrayList<String> names = new ArrayList<String>();
+		// check recipe item table
+		Cursor cursor = db.query(TABLE_ITEMS,
+				new String[] { KEY_LIST_NAME }, null, null, null, null, null);
+		if (cursor != null && cursor.moveToFirst()) {
+			while (cursor.isAfterLast() == false) {
+				String name = cursor.getString(cursor
+						.getColumnIndex(KEY_LIST_NAME));
+				if (!names.contains(name)) {
+					names.add(name);
+				}
+				cursor.moveToNext();
+			}
+		}
+		cursor.close();
+		db.close();
+		return names;
+	}
 
 }

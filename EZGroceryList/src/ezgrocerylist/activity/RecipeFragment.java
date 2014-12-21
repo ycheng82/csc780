@@ -25,20 +25,19 @@ import com.ezgrocerylist.R;
 import ezgrocerylist.sql.DatabaseHandler;
 
 public class RecipeFragment extends ListFragment {
-
+	ArrayList<String> recipeList;
+	String[] values;
+	ArrayAdapter<String> adapter;
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		DatabaseHandler db = new DatabaseHandler(getActivity());
-		ArrayList<String> recipeList = db.getRecipeList();
-		String[] values = new String[recipeList.size()];
-		values = recipeList.toArray(values);
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-				android.R.layout.simple_list_item_1, values);
+		recipeList = db.getRecipeList();
+		adapter = new ArrayAdapter<String>(getActivity(),
+				android.R.layout.simple_list_item_1, recipeList);
 		setListAdapter(adapter);
 		registerForContextMenu(this.getListView());
 	}
-
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		//call recipe editing 
@@ -52,7 +51,6 @@ public class RecipeFragment extends ListFragment {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 	    super.onCreateContextMenu(menu, v, menuInfo);
-
 	    MenuInflater inflater = this.getActivity().getMenuInflater();
 	    inflater.inflate(R.menu.recipe_context_menu, menu);
 	}
@@ -92,6 +90,7 @@ public class RecipeFragment extends ListFragment {
 	    				// update records in database
 	    				DatabaseHandler db = new DatabaseHandler(((Dialog) dialog).getContext());
 	    				int i = db.changeRecipeName(recipeName, newListName);
+	    				refreshFragment();
 	    				Toast.makeText(((Dialog) dialog).getContext(),
 	    						i + " recodes in " + recipeName + " have been changed.",
 	    						Toast.LENGTH_SHORT).show();
@@ -117,9 +116,11 @@ public class RecipeFragment extends ListFragment {
 	    		builder2.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 	    			@Override
 	    			public void onClick(DialogInterface dialog, int which) {
-	    				if (deleteRecipe(recipeName)){;
+	    				
+	    				if (deleteRecipe(recipeName)){
+	    					refreshFragment();
 	    					Toast.makeText(((Dialog) dialog).getContext(),"Recipe "+ recipeName + " has been deleted.",
-	    						Toast.LENGTH_LONG).show();
+	    						Toast.LENGTH_SHORT).show();
 	    				}
 
 	    			}
@@ -144,5 +145,23 @@ public class RecipeFragment extends ListFragment {
 			return true;
 		}
 		return false;
+	}
+	/**
+	 * refresh the fragment
+	 */
+	public void refreshFragment(){
+		DatabaseHandler db = new DatabaseHandler(getActivity());
+		ArrayList<String> tempList = db.getRecipeList();
+		recipeList.clear();
+		recipeList.addAll(tempList);
+		
+		adapter.notifyDataSetChanged();
+	}
+	@Override
+	public void onResume() {
+
+	    super.onResume();
+	    refreshFragment();
+
 	}
 }

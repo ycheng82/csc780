@@ -80,8 +80,8 @@ public class ShoppingActivity extends ActionBarActivity implements
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[2]));
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[3]));
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[4]));
-		navDrawerItems.add(new NavDrawerItem(navMenuTitles[5]));
-		navDrawerItems.add(new NavDrawerItem(navMenuTitles[6]));
+		//navDrawerItems.add(new NavDrawerItem(navMenuTitles[5]));
+		//navDrawerItems.add(new NavDrawerItem(navMenuTitles[6]));
 
 		// Recycle the typed array
 		// navMenuIcons.recycle();
@@ -226,7 +226,7 @@ public class ShoppingActivity extends ActionBarActivity implements
 		case 0:
 			// add icon?
 			// help information?
-			fragment = new HomeFragment("Pantry");
+			fragment = new ShoppingHomeFragment("Shopping");
 			break;
 		case 1:
 			// open list, need fragment replacement
@@ -260,16 +260,8 @@ public class ShoppingActivity extends ActionBarActivity implements
 			changeListName();
 			break;
 		case 4:
-			// category
-
-			break;
-		case 5:
 			// remove
 			removeList();
-			break;
-		case 6:
-			// add to shopping
-
 			break;
 		default:
 			break;
@@ -409,7 +401,7 @@ public class ShoppingActivity extends ActionBarActivity implements
 				int i = db.changeShoppingListName(listName, newListName);
 				Toast.makeText(ShoppingActivity.this,
 						i + " recodes in " + listName + " have been changed.",
-						Toast.LENGTH_LONG).show();
+						Toast.LENGTH_SHORT).show();
 			}
 		});
 		builder.setNegativeButton("Cancel",
@@ -437,7 +429,7 @@ public class ShoppingActivity extends ActionBarActivity implements
 				int i = db.removeShoppingList(listName);
 				Toast.makeText(ShoppingActivity.this,
 						i + " recodes in " + listName + " have been deleted.",
-						Toast.LENGTH_LONG).show();
+						Toast.LENGTH_SHORT).show();
 
 			}
 		});

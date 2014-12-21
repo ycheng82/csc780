@@ -19,7 +19,7 @@ public class BarcodeActivity extends Activity implements OnClickListener {
 	private Button scanBtn, addBtn;
 	private TextView formatTxt, contentTxt;
 	private String scanContent, scanFormat;
-	private String listName;
+	private String listName,editType;
 	
 	protected void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -39,6 +39,7 @@ public class BarcodeActivity extends Activity implements OnClickListener {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             listName = extras.getString("listname");
+            editType = extras.getString("type");
         }
 	}
 	
@@ -59,6 +60,7 @@ public class BarcodeActivity extends Activity implements OnClickListener {
 			Bundle extras = new Bundle();
 			extras.putString("barcode",scanContent);
 			extras.putString("listname",listName);
+			extras.putString("type",editType);
 			intent.putExtras(extras);
 			startActivity (intent);
 			

@@ -78,8 +78,8 @@ public class RecipeActivity extends ActionBarActivity implements
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[2]));
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[3]));
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[4]));
-		navDrawerItems.add(new NavDrawerItem(navMenuTitles[5]));
-		navDrawerItems.add(new NavDrawerItem(navMenuTitles[6]));
+		//navDrawerItems.add(new NavDrawerItem(navMenuTitles[5]));
+		//navDrawerItems.add(new NavDrawerItem(navMenuTitles[6]));
 
 		// Recycle the typed array
 		// navMenuIcons.recycle();
@@ -166,7 +166,9 @@ public class RecipeActivity extends ActionBarActivity implements
 
 			return true;
 		case R.id.recipe_action_cloud:
-			
+			Toast.makeText(RecipeActivity.this,
+					"Please buy the full version for accessing our amazing Recipe Cloud!!",
+					Toast.LENGTH_LONG).show();
 			return true;
 		case R.id.action_settings:
 			// actionName.setText("setting");
@@ -197,7 +199,7 @@ public class RecipeActivity extends ActionBarActivity implements
 		case 0:
 			// add icon?
 			// help information?
-			fragment = new HomeFragment("Recipe");
+			fragment = new RecipeHomeFragment("Recipe");
 			break;
 		case 1:
 			// open list, need fragment replacement
@@ -212,16 +214,8 @@ public class RecipeActivity extends ActionBarActivity implements
 			changeListName();
 			break;
 		case 4:
-			// category
-
-			break;
-		case 5:
 			// remove
 			removeList();
-			break;
-		case 6:
-			// add to shopping
-
 			break;
 		default:
 			break;
@@ -413,7 +407,7 @@ public class RecipeActivity extends ActionBarActivity implements
 				int i = db.changeListName(listName, newListName);
 				Toast.makeText(RecipeActivity.this,
 						i + " recodes in " + listName + " have been changed.",
-						Toast.LENGTH_LONG).show();
+						Toast.LENGTH_SHORT).show();
 			}
 		});
 		builder.setNegativeButton("Cancel",
@@ -440,7 +434,7 @@ public class RecipeActivity extends ActionBarActivity implements
 				int i = db.removeList(listName);
 				Toast.makeText(RecipeActivity.this,
 						i + " recodes in " + listName + " have been deleted.",
-						Toast.LENGTH_LONG).show();
+						Toast.LENGTH_SHORT).show();
 
 			}
 		});

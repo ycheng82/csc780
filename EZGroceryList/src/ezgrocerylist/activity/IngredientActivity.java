@@ -196,7 +196,7 @@ public class IngredientActivity extends Activity {
 		db.close();
 		Intent intent = new Intent();
 		setResult(RESULT_OK, intent);
-		Toast.makeText(this, "Ingredient saved", Toast.LENGTH_LONG).show();
+		Toast.makeText(this, "Ingredient saved", Toast.LENGTH_SHORT).show();
 		finish();
 	}
 
@@ -218,7 +218,7 @@ public class IngredientActivity extends Activity {
 		db.close();
 		Intent intent = new Intent();
 		setResult(RESULT_OK, intent);
-		Toast.makeText(this, "Ingredient deleted", Toast.LENGTH_LONG).show();
+		Toast.makeText(this, "Ingredient deleted", Toast.LENGTH_SHORT).show();
 		finish();
 	}
 

@@ -86,7 +86,7 @@ public class ShoppingListDetailFragment extends Fragment {
 				dataList);
 		expandableList.setAdapter(adapter);
 
-		expandableList
+		/*expandableList
 				.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
 
 					@Override
@@ -114,7 +114,7 @@ public class ShoppingListDetailFragment extends Fragment {
 						startActivityForResult(intent, ITEM_EDIT);
 						return true;
 					}
-				});
+				});*/
 	}
 
 	/**
@@ -122,6 +122,7 @@ public class ShoppingListDetailFragment extends Fragment {
 	 */
 	private void initData() {
 		DatabaseHandler db = new DatabaseHandler(this.getActivity());
+		dataList.clear();
 		groups = db.getShoppingListCategory(listName);
 
 		// children = db.getListContents(listName);
@@ -173,7 +174,7 @@ public class ShoppingListDetailFragment extends Fragment {
 		if (checkedChildren != null && !checkedChildren.isEmpty()) {
 			if (checkedChildren.size() > 1) {
 				Toast.makeText(getActivity(), "Select one item to edit!",
-						Toast.LENGTH_LONG).show();
+						Toast.LENGTH_SHORT).show();
 			} else {
 				Intent intent = new Intent(getActivity(), ItemActivity.class);
 
@@ -317,6 +318,7 @@ public class ShoppingListDetailFragment extends Fragment {
 		DatabaseHandler db = new DatabaseHandler(getActivity());
 		// call db to add to shopping table
 		if (db.delteShoppingItems(shoppingListName,groupName)>0) {
+			refreshFragment();
 			Toast.makeText(
 					getActivity(),db.delteShoppingItems(shoppingListName,groupName)+
 					" items in " + listName + " have been deleted",
@@ -379,12 +381,26 @@ public class ShoppingListDetailFragment extends Fragment {
 	public void deleteItem(String listName, String itemName) {
 		DatabaseHandler db = new DatabaseHandler(this.getActivity());
 		if (db.deleteShoppingItem(listName, itemName)) {
+			refreshFragment();
 			Toast.makeText(this.getActivity(),
 					itemName + " in " + listName + " has been deleted.",
 					Toast.LENGTH_SHORT).show();
 		}
 	}
+	/**
+	 * refresh the fragment
+	 */
+	public void refreshFragment(){
+		initData();
+		adapter.notifyDataSetChanged();
+	}
+	@Override
+	public void onResume() {
 
+	    super.onResume();
+	    refreshFragment();
+
+	}
 
 }
 

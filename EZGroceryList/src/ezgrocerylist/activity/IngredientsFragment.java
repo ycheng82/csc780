@@ -232,7 +232,7 @@ public class IngredientsFragment extends Fragment implements OnClickListener{
 		//call db to add to shopping table
 		if (db.addShoppingItems(shoppingListName,items)){
 			Toast.makeText(getActivity(), "Selected items added to shopping list "+shoppingListName,
-					Toast.LENGTH_LONG).show();
+					Toast.LENGTH_SHORT).show();
 		}
 	}
 	@Override

@@ -25,7 +25,7 @@ public class VoiceActivity extends Activity {
     private TextView txtSpeechInput;
     private ImageButton btnSpeak;
     private final int REQ_CODE_SPEECH_INPUT = 100;
-    private String listName;
+    private String listName,editType;
  
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +50,7 @@ public class VoiceActivity extends Activity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             listName = extras.getString("listname");
+            editType = extras.getString("type");
         }
  
     }
@@ -102,6 +103,7 @@ public class VoiceActivity extends Activity {
         				Bundle extras = new Bundle();
         				extras.putString("listname",listName);
         				extras.putString("itemname",result.get(0));
+        				extras.putString("type",editType);
         				intent.putExtras(extras);
         				startActivity (intent);
         		    }

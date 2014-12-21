@@ -88,8 +88,8 @@ public class PantryActivity extends ActionBarActivity implements
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[2]));
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[3]));
 		navDrawerItems.add(new NavDrawerItem(navMenuTitles[4]));
-		navDrawerItems.add(new NavDrawerItem(navMenuTitles[5]));
-		navDrawerItems.add(new NavDrawerItem(navMenuTitles[6]));
+		//navDrawerItems.add(new NavDrawerItem(navMenuTitles[5]));
+		//navDrawerItems.add(new NavDrawerItem(navMenuTitles[6]));
 
 		// Recycle the typed array
 		// navMenuIcons.recycle();
@@ -160,63 +160,70 @@ public class PantryActivity extends ActionBarActivity implements
 			return true;
 		}
 		// Handle presses on the action bar items
-		switch (item.getItemId()) {
-		case R.id.action_bar_code:
-			// actionName.setText("bar code scanning");
-			// call barcode scanner screen for an item
-			Intent barcodeIntent = new Intent(this, BarcodeActivity.class);
-			barcodeIntent.putExtra("listname", listName);
-			startActivity(barcodeIntent);
-			return true;
-		case R.id.action_text:
-			// actionName.setText("text input");
-			// call item input screen for an item
-			Intent intent = new Intent(this, ItemActivity.class);
+		if (listName!=null){
+			switch (item.getItemId()) {
+			case R.id.action_bar_code:
+				// actionName.setText("bar code scanning");
+				// call barcode scanner screen for an item
+				Intent barcodeIntent = new Intent(this, BarcodeActivity.class);
+				barcodeIntent.putExtra("listname", listName);
+				barcodeIntent.putExtra("type","Pantry");
+				startActivity(barcodeIntent);
+				return true;
+			case R.id.action_text:
+				// actionName.setText("text input");
+				// call item input screen for an item
+				Intent intent = new Intent(this, ItemActivity.class);
 
-			intent.putExtra("listname", listName);
-			intent.putExtra("type","Pantry");
-			startActivityForResult(intent, 0);
-			return true;
-		case R.id.action_email:
-			// actionName.setText("share by email");
-			Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-			emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-					"I want to share this list with you");
+				intent.putExtra("listname", listName);
+				intent.putExtra("type","Pantry");
+				startActivityForResult(intent, 0);
+				return true;
+			case R.id.action_email:
+				// actionName.setText("share by email");
+				Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+				emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+						"I want to share this list with you");
 
-			emailIntent.setType("plain/text");
-			DatabaseHandler db = new DatabaseHandler(this);
-			ArrayList<Item> items = db.getItems(listName);
-			
-			for (int i = 0; i < items.size();i++){
-				listContents += items.get(i).getItemName() + "			";
-				listContents += items.get(i).getItemQuantity() + "			";
-				listContents += items.get(i).getItemUnit() + "\n";
+				emailIntent.setType("plain/text");
+				DatabaseHandler db = new DatabaseHandler(this);
+				ArrayList<Item> items = db.getItems(listName);
+				
+				for (int i = 0; i < items.size();i++){
+					listContents += items.get(i).getItemName() + "			";
+					listContents += items.get(i).getItemQuantity() + "			";
+					listContents += items.get(i).getItemUnit() + "\n";
+				}
+				String emailBody = listContents;
+				// (TextView) findViewById(R.id.pantry_action_name)
+				emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailBody);
+
+				startActivity(emailIntent);
+
+				return true;
+			case R.id.action_voice:
+				// actionName.setText("voice input");
+				Intent voiceIntent = new Intent(this, VoiceActivity.class);
+				voiceIntent.putExtra("listname", listName);
+				voiceIntent.putExtra("type","Pantry");
+				startActivity(voiceIntent);
+				return true;
+			case R.id.action_settings:
+				// actionName.setText("setting");
+				return true;
+			case R.id.action_shopping:
+				// add selected items to shopping list
+				DetailListFragment fr = (DetailListFragment) getFragmentManager().findFragmentById(R.id.frame_container);
+				List<String> shoppingItems = fr.getShoppingItems();
+				addShoppingItems(shoppingItems);
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
 			}
-			String emailBody = listContents;
-			// (TextView) findViewById(R.id.pantry_action_name)
-			emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailBody);
-
-			startActivity(emailIntent);
-
-			return true;
-		case R.id.action_voice:
-			// actionName.setText("voice input");
-			Intent voiceIntent = new Intent(this, VoiceActivity.class);
-			voiceIntent.putExtra("listname", listName);
-			startActivity(voiceIntent);
-			return true;
-		case R.id.action_settings:
-			// actionName.setText("setting");
-			return true;
-		case R.id.action_shopping:
-			// add selected items to shopping list
-			DetailListFragment fr = (DetailListFragment) getFragmentManager().findFragmentById(R.id.frame_container);
-			List<String> shoppingItems = fr.getShoppingItems();
-			addShoppingItems(shoppingItems);
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
 		}
+		else
+			return true;
+
 	}
 
 	private void addShoppingItems(List<String> shoppingItems) {
@@ -246,7 +253,7 @@ public class PantryActivity extends ActionBarActivity implements
 					//call db to add to shopping table
 					if (db.addShoppingItems(input.getText().toString(),items)){
 						Toast.makeText(PantryActivity.this, "Selected items added to shopping list "+input.getText().toString(),
-								Toast.LENGTH_LONG).show();
+								Toast.LENGTH_SHORT).show();
 					}
 
 				}
@@ -320,16 +327,8 @@ public class PantryActivity extends ActionBarActivity implements
 			changeListName();
 			break;
 		case 4:
-			// category
-
-			break;
-		case 5:
 			// remove
 			removeList();
-			break;
-		case 6:
-			// add to shopping
-
 			break;
 		default:
 			break;
@@ -469,7 +468,7 @@ public class PantryActivity extends ActionBarActivity implements
 				int i = db.changeListName(listName, newListName);
 				Toast.makeText(PantryActivity.this,
 						i + " recodes in " + listName + " have been changed.",
-						Toast.LENGTH_LONG).show();
+						Toast.LENGTH_SHORT).show();
 			}
 		});
 		builder.setNegativeButton("Cancel",
@@ -484,31 +483,47 @@ public class PantryActivity extends ActionBarActivity implements
 
 	}
 
+	/**
+	 * remove a pantry list from database
+	 */
 	public void removeList() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("You are going to delete " + listName
-				+ ". Are you sure?");
+		if (listName==null){
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("To delete a pantry list, please open a list first!");
+			builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+				}
+			});
+			builder.show();
+		}
+		else{
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("You are going to delete " + listName
+					+ ". Are you sure?");
 
-		// Set up the buttons
-		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				DatabaseHandler db = new DatabaseHandler(PantryActivity.this);
-				int i = db.removeList(listName);
-				Toast.makeText(PantryActivity.this,
-						i + " recodes in " + listName + " have been deleted.",
-						Toast.LENGTH_LONG).show();
+			// Set up the buttons
+			builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					DatabaseHandler db = new DatabaseHandler(PantryActivity.this);
+					int i = db.removeList(listName);
+					Toast.makeText(PantryActivity.this,
+							i + " recodes in " + listName + " have been deleted.",
+							Toast.LENGTH_SHORT).show();
 
-			}
-		});
-		builder.setNegativeButton("Cancel",
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-					}
-				});
-		builder.show();
+				}
+			});
+			builder.setNegativeButton("Cancel",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+						}
+					});
+			builder.show();
+		}
+
 	}
 
 

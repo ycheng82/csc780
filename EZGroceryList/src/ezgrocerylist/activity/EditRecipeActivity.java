@@ -189,11 +189,11 @@ public class EditRecipeActivity extends FragmentActivity implements
 				stepsFragment.setRecipeName(recipeName);
 				return stepsFragment;
 			
-			case 3:
+			/*case 3:
 				// show image fragment
 				ImageFragment imageFragment = new ImageFragment();
 				imageFragment.setRecipeName(recipeName);
-				return imageFragment;
+				return imageFragment;*/
 
 			default:
 				// The other sections of the app are dummy placeholders.
@@ -207,7 +207,7 @@ public class EditRecipeActivity extends FragmentActivity implements
 
 		@Override
 		public int getCount() {
-			return 4;
+			return 3;
 		}
 
 		@Override
@@ -219,8 +219,8 @@ public class EditRecipeActivity extends FragmentActivity implements
 				return "Ingredients";
 			case 2:
 				return "Steps";
-			case 3:
-				return "Images";
+			//case 3:
+				//return "Images";
 			default:
 				return "Introductions";
 			}

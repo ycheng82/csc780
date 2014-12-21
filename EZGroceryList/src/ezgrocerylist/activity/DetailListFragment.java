@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
@@ -46,7 +47,7 @@ public class DetailListFragment extends Fragment {
 	private ExpandableListView expandableList;
 	//private Button showBtn, shoppingBtn;
 	private ListViewAdapter adapter;
-	private List<GroupItem> dataList = new ArrayList<GroupItem>();
+	private List<GroupItem> dataList=new ArrayList<GroupItem>();
 	private View rootView;
 
 	private String listName;
@@ -95,15 +96,6 @@ public class DetailListFragment extends Fragment {
 		adapter = new ListViewAdapter(getActivity().getApplicationContext(),
 				dataList);
 		expandableList.setAdapter(adapter);
-
-		/*
-		 * expandableList .setOnChildClickListener(new
-		 * ExpandableListView.OnChildClickListener() {
-		 * 
-		 * @Override public boolean onChildClick(ExpandableListView parent, View
-		 * v, int groupPosition, int childPosition, long id) {
-		 * Log.e("long click","clicked"); return true; } });
-		 */
 	}
 
 	/**
@@ -112,6 +104,7 @@ public class DetailListFragment extends Fragment {
 	private void initData() {
 		DatabaseHandler db = new DatabaseHandler(this.getActivity());
 		groups = db.getListCategory(listName);
+		dataList.clear();
 
 		// children = db.getListContents(listName);
 		for (int i = 0; i < groups.length; i++) {
@@ -178,7 +171,7 @@ public class DetailListFragment extends Fragment {
 			Toast.makeText(
 					getActivity(),
 					"Selected items added to shopping list " + shoppingListName,
-					Toast.LENGTH_LONG).show();
+					Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -331,6 +324,7 @@ public class DetailListFragment extends Fragment {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				deleteItem(listName, itemName);
+				
 			}
 		});
 		builder.setNegativeButton("Cancel",
@@ -351,6 +345,7 @@ public class DetailListFragment extends Fragment {
 	public void deleteItem(String listName, String itemName) {
 		DatabaseHandler db = new DatabaseHandler(this.getActivity());
 		if (db.deleteItem(listName, itemName)) {
+			refreshFragment();
 			Toast.makeText(this.getActivity(),
 					itemName + " in " + listName + " has been deleted.",
 					Toast.LENGTH_SHORT).show();
@@ -449,6 +444,7 @@ public class DetailListFragment extends Fragment {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				deleteItems(listName, groupName);
+				
 			}
 		});
 		builder.setNegativeButton("Cancel",
@@ -461,10 +457,16 @@ public class DetailListFragment extends Fragment {
 		builder.show();
 	}
 
+	/**
+	 * delete item
+	 * @param pantryListName
+	 * @param groupName
+	 */
 	protected void deleteItems(String pantryListName, String groupName) {
 		DatabaseHandler db = new DatabaseHandler(getActivity());
 		// call db to add to shopping table
 		if (db.delteItems(pantryListName,groupName)>0) {
+			refreshFragment();
 			Toast.makeText(
 					getActivity(),db.delteItems(pantryListName,groupName)+
 					" items in " + listName + " have been deleted",
@@ -472,5 +474,19 @@ public class DetailListFragment extends Fragment {
 		}
 		
 	}
+	
+	/**
+	 * refresh the fragment
+	 */
+	public void refreshFragment(){
+		initData();
+		adapter.notifyDataSetChanged();
+	}
+	@Override
+	public void onResume() {
 
+	    super.onResume();
+	    refreshFragment();
+
+	}
 }
