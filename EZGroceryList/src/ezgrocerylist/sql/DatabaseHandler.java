@@ -14,7 +14,7 @@ import android.text.Editable;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-	private static final int DATABASE_VERSION = 21;
+	private static final int DATABASE_VERSION = 26;
 
 	private static final String DATABASE_NAME = "EZgrocery";
 
@@ -24,6 +24,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String TABLE_STEPS = "steps";
 	private static final String TABLE_SHOPPING = "shopping";
 	private static final String TABLE_RECIPE_DES = "recipe_description";
+	private static final String TABLE_UNIT = "item_unit";
 
 	private static final String KEY_LIST_NAME = "listName";
 	private static final String KEY_ITEM_NAME = "itemName";
@@ -40,8 +41,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String KEY_STEP_ID = "stepId";
 	private static final String KEY_STEP_DETAIL = "stepDetail";
 	private static final String KEY_RECIPE_DES = "recipeDescription";
-	
+
 	private static final String KEY_SHOPPING_LIST_NAME = "shoppingListName";
+
+	private static final String KEY_UNIT_ID = "unitId";
+	private static final String KEY_UNIT_NAME = "unitName";
 
 	public DatabaseHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -61,7 +65,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		String CREATE_TAGS_TABLE_RECIPE = "CREATE TABLE " + TABLE_RECIPES + "("
 				+ KEY_RECIPE_NAME + " TEXT NOT NULL," + KEY_ITEM_NAME
 				+ " TEXT," + KEY_ITEM_QUANTITY + " INTEGER," + KEY_ITEM_UNIT
-				+ " TEXT," + KEY_ITEM_NOTE + " TEXT," + KEY_ITEM_CATEGORY + " TEXT" + ")";
+				+ " TEXT," + KEY_ITEM_NOTE + " TEXT," + KEY_ITEM_CATEGORY
+				+ " TEXT" + ")";
 		db.execSQL(CREATE_TAGS_TABLE_RECIPE);
 		// create recipe step table (store recipe steps)
 		String CREATE_TAGS_TABLE_STEPS = "CREATE TABLE " + TABLE_STEPS + "("
@@ -73,17 +78,43 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_RECIPE_NAME + " TEXT NOT NULL," + KEY_RECIPE_COVER
 				+ " INTEGER," + KEY_RECIPE_IMAGE + " TEXT" + ")";
 		db.execSQL(CREATE_TAGS_TABLE_IMAGES);
-		String CREATE_TAGS_TABLE_SHOPPING = "CREATE TABLE " + TABLE_SHOPPING + "("
-				+ KEY_SHOPPING_LIST_NAME + " TEXT NOT NULL," + KEY_ITEM_NAME
-				+ " TEXT NOT NULL," + KEY_ITEM_QUANTITY + " INTEGER,"
-				+ KEY_ITEM_UNIT + " TEXT," + KEY_ITEM_PRICE + " FLOAT,"
-				+ KEY_ITEM_NOTE + " TEXT," + KEY_ITEM_CATEGORY + " TEXT,"
-				+ KEY_ITEM_BARCODE + " TEXT" + ")";
+		String CREATE_TAGS_TABLE_SHOPPING = "CREATE TABLE " + TABLE_SHOPPING
+				+ "(" + KEY_SHOPPING_LIST_NAME + " TEXT NOT NULL,"
+				+ KEY_ITEM_NAME + " TEXT NOT NULL," + KEY_ITEM_QUANTITY
+				+ " INTEGER," + KEY_ITEM_UNIT + " TEXT," + KEY_ITEM_PRICE
+				+ " FLOAT," + KEY_ITEM_NOTE + " TEXT," + KEY_ITEM_CATEGORY
+				+ " TEXT," + KEY_ITEM_BARCODE + " TEXT" + ")";
 		db.execSQL(CREATE_TAGS_TABLE_SHOPPING);
-		String CREATE_TAGS_TABLE_RECIPE_DES = "CREATE TABLE " + TABLE_RECIPE_DES + "("
-				+ KEY_RECIPE_NAME + " TEXT NOT NULL," 
+		String CREATE_TAGS_TABLE_RECIPE_DES = "CREATE TABLE "
+				+ TABLE_RECIPE_DES + "(" + KEY_RECIPE_NAME + " TEXT NOT NULL,"
 				+ KEY_RECIPE_DES + " TEXT" + ")";
 		db.execSQL(CREATE_TAGS_TABLE_RECIPE_DES);
+		String CREATE_CATEGORIES_TABLE_UNIT = "CREATE TABLE " + TABLE_UNIT
+				+ "(" + KEY_UNIT_ID + " INTEGER PRIMARY KEY," + KEY_UNIT_NAME
+				+ " TEXT)";
+		db.execSQL(CREATE_CATEGORIES_TABLE_UNIT);
+	}
+
+	public void addDefaultUnit() {
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+
+		String[] unit = { "ea", "lb", "kg", "g", "box", "bag", "new" };
+
+		Cursor cursor = db.query(TABLE_UNIT, new String[] {KEY_UNIT_ID,KEY_UNIT_NAME}, 
+				KEY_UNIT_NAME + "=?" ,
+				new String[] { "ea"}, null, null,
+				null, null);
+		if (!cursor.moveToFirst()) {
+			for (int i = 0; i < unit.length; i++) {
+				values.put(KEY_UNIT_ID, i + 1);
+				values.put(KEY_UNIT_NAME, unit[i]);
+				db.insert(TABLE_UNIT, null, values);
+
+			}
+			db.close();
+		}
 	}
 
 	@Override
@@ -94,6 +125,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_IMAGES);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_SHOPPING);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECIPE_DES);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_UNIT);
 		onCreate(db);
 	}
 
@@ -103,12 +135,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public int addItem(String listName, Item item) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
-		Cursor cursor = db.query(TABLE_ITEMS,
-				new String[] {KEY_LIST_NAME,
+		Cursor cursor = db.query(TABLE_ITEMS, new String[] { KEY_LIST_NAME,
 				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT,
 				KEY_ITEM_PRICE, KEY_ITEM_NOTE, KEY_ITEM_CATEGORY,
-				KEY_ITEM_BARCODE },
-				KEY_LIST_NAME + "=?" + " AND " + KEY_ITEM_NAME + "=?",
+				KEY_ITEM_BARCODE }, KEY_LIST_NAME + "=?" + " AND "
+				+ KEY_ITEM_NAME + "=?",
 				new String[] { listName, item.getItemName() }, null, null,
 				null, null);
 		if (cursor.moveToFirst()) {
@@ -124,8 +155,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			String[] args = new String[1];
 			args[0] = listName;
 			return db.update(TABLE_ITEMS, values, KEY_LIST_NAME + "=?"
-					+ " AND " + KEY_ITEM_NAME + "=?", new String[] {
-					listName, item.getItemName() });
+					+ " AND " + KEY_ITEM_NAME + "=?", new String[] { listName,
+					item.getItemName() });
 		} else {
 			// record not found
 			values.put(KEY_LIST_NAME, listName);
@@ -243,10 +274,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public int addIngredient(String recipeName, Item item) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
-		Cursor cursor = db.query(TABLE_RECIPES,
-				new String[] { KEY_RECIPE_NAME, KEY_ITEM_NAME,
-						KEY_ITEM_QUANTITY, KEY_ITEM_UNIT, KEY_ITEM_NOTE,KEY_ITEM_CATEGORY },
-				KEY_RECIPE_NAME + "=?" + " AND " + KEY_ITEM_NAME + "=?",
+		Cursor cursor = db.query(TABLE_RECIPES, new String[] { KEY_RECIPE_NAME,
+				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT, KEY_ITEM_NOTE,
+				KEY_ITEM_CATEGORY }, KEY_RECIPE_NAME + "=?" + " AND "
+				+ KEY_ITEM_NAME + "=?",
 				new String[] { recipeName, item.getItemName() }, null, null,
 				null, null);
 		if (cursor.moveToFirst()) {
@@ -460,11 +491,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public ArrayList<Item> getIngredients(String recipeName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		ArrayList<Item> items = new ArrayList<Item>();
-		Cursor cursor = db.query(TABLE_RECIPES,
-				new String[] { KEY_RECIPE_NAME, KEY_ITEM_NAME,
-						KEY_ITEM_QUANTITY, KEY_ITEM_UNIT, KEY_ITEM_NOTE,KEY_ITEM_CATEGORY },
-				KEY_RECIPE_NAME + "=?", new String[] { recipeName }, null,
-				null, null, null);
+		Cursor cursor = db.query(TABLE_RECIPES, new String[] { KEY_RECIPE_NAME,
+				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT, KEY_ITEM_NOTE,
+				KEY_ITEM_CATEGORY }, KEY_RECIPE_NAME + "=?",
+				new String[] { recipeName }, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			while (cursor.isAfterLast() == false) {
 				// Calllog is a class with list of fileds
@@ -500,11 +530,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public Item getIngredient(String recipeName, String itemName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		Item item = new Item();
-		Cursor cursor = db.query(TABLE_RECIPES,
-				new String[] { KEY_RECIPE_NAME, KEY_ITEM_NAME,
-						KEY_ITEM_QUANTITY, KEY_ITEM_UNIT, KEY_ITEM_NOTE,KEY_ITEM_CATEGORY},
-				KEY_RECIPE_NAME + "=?" + " AND " + KEY_ITEM_NAME + "=?",
-				new String[] { recipeName, itemName }, null, null, null);
+		Cursor cursor = db.query(TABLE_RECIPES, new String[] { KEY_RECIPE_NAME,
+				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT, KEY_ITEM_NOTE,
+				KEY_ITEM_CATEGORY }, KEY_RECIPE_NAME + "=?" + " AND "
+				+ KEY_ITEM_NAME + "=?", new String[] { recipeName, itemName },
+				null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			item.setItemName(cursor.getString(cursor
 					.getColumnIndex(KEY_ITEM_NAME)));
@@ -602,6 +632,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	/**
 	 * get category in a pantry list
+	 * 
 	 * @param listName
 	 * @return
 	 */
@@ -625,6 +656,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	/**
 	 * get the contents in a pantry list
+	 * 
 	 * @param listName
 	 * @return
 	 */
@@ -649,9 +681,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		if (uCats != null) {
 
 			for (String value : uCats) {
-				listText="";
+				listText = "";
 				for (int j = 0; j < items.size(); j++) {
-					
+
 					if (items.get(j).getItemCategory().equals(value)) {
 						// Log.d("category 1 ",items.get(j).getItemCategory());
 						listText += items.get(j).getItemName() + "		"
@@ -667,7 +699,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		return listContents;
 	}
-	
+
 	/**
 	 * get an item from database
 	 * 
@@ -678,13 +710,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public Item getItem(String listName, String itemName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		Item item = new Item();
-		Cursor cursor = db.query(TABLE_ITEMS,
-				new String[] { KEY_LIST_NAME,
+		Cursor cursor = db.query(TABLE_ITEMS, new String[] { KEY_LIST_NAME,
 				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT,
 				KEY_ITEM_PRICE, KEY_ITEM_NOTE, KEY_ITEM_CATEGORY,
-				KEY_ITEM_BARCODE },
-				KEY_LIST_NAME + "=?" + " AND " + KEY_ITEM_NAME + "=?",
-				new String[] { listName, itemName }, null, null, null);
+				KEY_ITEM_BARCODE }, KEY_LIST_NAME + "=?" + " AND "
+				+ KEY_ITEM_NAME + "=?", new String[] { listName, itemName },
+				null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			item.setItemName(cursor.getString(cursor
 					.getColumnIndex(KEY_ITEM_NAME)));
@@ -705,6 +736,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.close();
 		return item;
 	}
+
 	/**
 	 * delete an item from pantry database
 	 * 
@@ -717,6 +749,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return db.delete(TABLE_ITEMS, KEY_LIST_NAME + "=?" + " AND "
 				+ KEY_ITEM_NAME + "=?", new String[] { listName, itemName }) > 0;
 	}
+
 	/**
 	 * delete a recipe from recipe database
 	 * 
@@ -726,25 +759,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public boolean deleteRecipe(String recipeName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		int n1 = db.delete(TABLE_STEPS, KEY_RECIPE_NAME + "=?",
-				new String[] { recipeName }) ;
+				new String[] { recipeName });
 		int n2 = db.delete(TABLE_IMAGES, KEY_RECIPE_NAME + "=?",
 				new String[] { recipeName });
 		int n3 = db.delete(TABLE_RECIPES, KEY_RECIPE_NAME + "=?",
 				new String[] { recipeName });
 		int n4 = db.delete(TABLE_RECIPE_DES, KEY_RECIPE_NAME + "=?",
 				new String[] { recipeName });
-		return (n1+n2+n4)> 0;
+		return (n1 + n2 + n4) > 0;
 	}
 
-	public ArrayList<Item> getCategoryContents(String listName, String categoryName) {
+	public ArrayList<Item> getCategoryContents(String listName,
+			String categoryName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		ArrayList<Item> items = new ArrayList<Item>();
 		Cursor cursor = db.query(TABLE_ITEMS, new String[] { KEY_LIST_NAME,
 				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT,
 				KEY_ITEM_PRICE, KEY_ITEM_NOTE, KEY_ITEM_CATEGORY,
-				KEY_ITEM_BARCODE }, KEY_LIST_NAME + "=?"+ " AND "
-						+ KEY_ITEM_CATEGORY + "=?",
-				new String[] { listName,categoryName }, null, null, null, null);
+				KEY_ITEM_BARCODE }, KEY_LIST_NAME + "=?" + " AND "
+				+ KEY_ITEM_CATEGORY + "=?", new String[] { listName,
+				categoryName }, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			while (cursor.isAfterLast() == false) {
 				// Calllog is a class with list of fileds
@@ -777,33 +811,30 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public boolean addShoppingItems(String shoppingListName,
 			ArrayList<Item> items) {
 		int k = 0;
-		for(int i = 0; i<items.size();i++){
-			addShoppingItem(shoppingListName,items.get(i));
+		for (int i = 0; i < items.size(); i++) {
+			addShoppingItem(shoppingListName, items.get(i));
 			k++;
 		}
-		if (k == items.size()){
+		if (k == items.size()) {
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
-		
+
 	}
-	
+
 	/**
 	 * Add a new item to the database.
 	 */
 	public int addShoppingItem(String listName, Item item) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
-		Cursor cursor = db.query(TABLE_SHOPPING,
-				new String[] {KEY_SHOPPING_LIST_NAME,
-				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT,
-				KEY_ITEM_PRICE, KEY_ITEM_NOTE, KEY_ITEM_CATEGORY,
-				KEY_ITEM_BARCODE },
-				KEY_SHOPPING_LIST_NAME + "=?" + " AND " + KEY_ITEM_NAME + "=?",
-				new String[] { listName, item.getItemName() }, null, null,
-				null, null);
+		Cursor cursor = db.query(TABLE_SHOPPING, new String[] {
+				KEY_SHOPPING_LIST_NAME, KEY_ITEM_NAME, KEY_ITEM_QUANTITY,
+				KEY_ITEM_UNIT, KEY_ITEM_PRICE, KEY_ITEM_NOTE,
+				KEY_ITEM_CATEGORY, KEY_ITEM_BARCODE }, KEY_SHOPPING_LIST_NAME
+				+ "=?" + " AND " + KEY_ITEM_NAME + "=?", new String[] {
+				listName, item.getItemName() }, null, null, null, null);
 		if (cursor.moveToFirst()) {
 			// record exists
 			values.put(KEY_SHOPPING_LIST_NAME, listName);
@@ -816,8 +847,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			values.put(KEY_ITEM_BARCODE, item.getItemBarcode());
 			String[] args = new String[1];
 			args[0] = listName;
-			return db.update(TABLE_SHOPPING, values, KEY_SHOPPING_LIST_NAME + "=?"
-					+ " AND " + KEY_ITEM_NAME + "=?", new String[] {
+			return db.update(TABLE_SHOPPING, values, KEY_SHOPPING_LIST_NAME
+					+ "=?" + " AND " + KEY_ITEM_NAME + "=?", new String[] {
 					listName, item.getItemName() });
 		} else {
 			// record not found
@@ -837,13 +868,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	/**
 	 * get all the shopping lists in the database
+	 * 
 	 * @return arraylist of names of shopping list
 	 */
 	public ArrayList<String> getShoppingLists() {
 		SQLiteDatabase db = this.getReadableDatabase();
 		ArrayList<String> names = new ArrayList<String>();
-		Cursor cursor = db.query(TABLE_SHOPPING, new String[] { KEY_SHOPPING_LIST_NAME },
-				null, null, null, null, null);
+		Cursor cursor = db.query(TABLE_SHOPPING,
+				new String[] { KEY_SHOPPING_LIST_NAME }, null, null, null,
+				null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			while (cursor.isAfterLast() == false) {
 				String name = cursor.getString(cursor
@@ -859,6 +892,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	/**
 	 * get category for a shopping list
+	 * 
 	 * @param listName
 	 * @return array of string of category name
 	 */
@@ -882,17 +916,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	/**
 	 * Get items in a given shopping list
+	 * 
 	 * @param listName
 	 * @return arraylist of items
 	 */
 	public ArrayList<Item> getShoppingItems(String listName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		ArrayList<Item> items = new ArrayList<Item>();
-		Cursor cursor = db.query(TABLE_SHOPPING, new String[] { KEY_SHOPPING_LIST_NAME,
-				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT,
-				KEY_ITEM_PRICE, KEY_ITEM_NOTE, KEY_ITEM_CATEGORY,
-				KEY_ITEM_BARCODE }, KEY_SHOPPING_LIST_NAME + "=?",
-				new String[] { listName }, null, null, null, null);
+		Cursor cursor = db.query(TABLE_SHOPPING, new String[] {
+				KEY_SHOPPING_LIST_NAME, KEY_ITEM_NAME, KEY_ITEM_QUANTITY,
+				KEY_ITEM_UNIT, KEY_ITEM_PRICE, KEY_ITEM_NOTE,
+				KEY_ITEM_CATEGORY, KEY_ITEM_BARCODE }, KEY_SHOPPING_LIST_NAME
+				+ "=?", new String[] { listName }, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			while (cursor.isAfterLast() == false) {
 				// Calllog is a class with list of fileds
@@ -922,15 +957,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return items;
 	}
 
-	public List<Item> getShoppingCategoryContents(String listName, String categoryName) {
+	public List<Item> getShoppingCategoryContents(String listName,
+			String categoryName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		ArrayList<Item> items = new ArrayList<Item>();
-		Cursor cursor = db.query(TABLE_SHOPPING, new String[] { KEY_SHOPPING_LIST_NAME,
-				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT,
-				KEY_ITEM_PRICE, KEY_ITEM_NOTE, KEY_ITEM_CATEGORY,
-				KEY_ITEM_BARCODE }, KEY_SHOPPING_LIST_NAME + "=?"+ " AND "
-						+ KEY_ITEM_CATEGORY + "=?",
-				new String[] { listName,categoryName }, null, null, null, null);
+		Cursor cursor = db.query(TABLE_SHOPPING, new String[] {
+				KEY_SHOPPING_LIST_NAME, KEY_ITEM_NAME, KEY_ITEM_QUANTITY,
+				KEY_ITEM_UNIT, KEY_ITEM_PRICE, KEY_ITEM_NOTE,
+				KEY_ITEM_CATEGORY, KEY_ITEM_BARCODE }, KEY_SHOPPING_LIST_NAME
+				+ "=?" + " AND " + KEY_ITEM_CATEGORY + "=?", new String[] {
+				listName, categoryName }, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			while (cursor.isAfterLast() == false) {
 				// Calllog is a class with list of fileds
@@ -962,20 +998,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	/**
 	 * get an item from shopping table
-	 * @param listName shopping list name
-	 * @param itemName item name
+	 * 
+	 * @param listName
+	 *            shopping list name
+	 * @param itemName
+	 *            item name
 	 * @return item
 	 */
 	public Item getShoppingItem(String listName, String itemName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		Item item = new Item();
-		Cursor cursor = db.query(TABLE_SHOPPING,
-				new String[] { KEY_SHOPPING_LIST_NAME,
-				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT,
-				KEY_ITEM_PRICE, KEY_ITEM_NOTE, KEY_ITEM_CATEGORY,
-				KEY_ITEM_BARCODE },
-				KEY_SHOPPING_LIST_NAME + "=?" + " AND " + KEY_ITEM_NAME + "=?",
-				new String[] { listName, itemName }, null, null, null);
+		Cursor cursor = db.query(TABLE_SHOPPING, new String[] {
+				KEY_SHOPPING_LIST_NAME, KEY_ITEM_NAME, KEY_ITEM_QUANTITY,
+				KEY_ITEM_UNIT, KEY_ITEM_PRICE, KEY_ITEM_NOTE,
+				KEY_ITEM_CATEGORY, KEY_ITEM_BARCODE }, KEY_SHOPPING_LIST_NAME
+				+ "=?" + " AND " + KEY_ITEM_NAME + "=?", new String[] {
+				listName, itemName }, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			item.setItemName(cursor.getString(cursor
 					.getColumnIndex(KEY_ITEM_NAME)));
@@ -999,19 +1037,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	/**
 	 * delete an item from shopping table
+	 * 
 	 * @param listName
 	 * @param itemName
 	 * @return true if item is deleted; false if item is not deleted
 	 */
 	public boolean deleteShoppingItem(String listName, String itemName) {
 		SQLiteDatabase db = this.getReadableDatabase();
-		return db.delete(TABLE_SHOPPING, KEY_SHOPPING_LIST_NAME + "=?" + " AND "
-				+ KEY_ITEM_NAME + "=?", new String[] { listName, itemName }) > 0;
-		
+		return db.delete(TABLE_SHOPPING, KEY_SHOPPING_LIST_NAME + "=?"
+				+ " AND " + KEY_ITEM_NAME + "=?", new String[] { listName,
+				itemName }) > 0;
+
 	}
 
 	/**
 	 * remove a given shopping list from shopping table
+	 * 
 	 * @param listName
 	 * @return number of items deleted in this list
 	 */
@@ -1024,6 +1065,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	/**
 	 * change the name of a given shopping list
+	 * 
 	 * @param listName
 	 * @param newListName
 	 * @return number of records changed in this list
@@ -1035,25 +1077,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		values.put(KEY_SHOPPING_LIST_NAME, newListName);
 		String[] args = new String[1];
 		args[0] = oldListName;
-		return db.update(TABLE_SHOPPING, values, KEY_SHOPPING_LIST_NAME + "=?", args);
+		return db.update(TABLE_SHOPPING, values, KEY_SHOPPING_LIST_NAME + "=?",
+				args);
 	}
 
 	/**
 	 * add items from a category in a pantry list to a shopping list
+	 * 
 	 * @param pantryListName
 	 * @param shoppingListName
 	 * @param catName
 	 * @return true if added, false if not added
 	 */
-	public boolean addCatShopping(String pantryListName,String shoppingListName, String catName) {
+	public boolean addCatShopping(String pantryListName,
+			String shoppingListName, String catName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		ArrayList<Item> items = new ArrayList<Item>();
 		Cursor cursor = db.query(TABLE_ITEMS, new String[] { KEY_LIST_NAME,
 				KEY_ITEM_NAME, KEY_ITEM_QUANTITY, KEY_ITEM_UNIT,
 				KEY_ITEM_PRICE, KEY_ITEM_NOTE, KEY_ITEM_CATEGORY,
-				KEY_ITEM_BARCODE }, KEY_LIST_NAME + "=?"+ " AND "
-						+ KEY_ITEM_CATEGORY + "=?",
-				new String[] { pantryListName,catName }, null, null, null, null);
+				KEY_ITEM_BARCODE }, KEY_LIST_NAME + "=?" + " AND "
+				+ KEY_ITEM_CATEGORY + "=?", new String[] { pantryListName,
+				catName }, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			while (cursor.isAfterLast() == false) {
 				// Calllog is a class with list of fileds
@@ -1080,11 +1125,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		}
 		cursor.close();
 		db.close();
-		return addShoppingItems(shoppingListName,items);
+		return addShoppingItems(shoppingListName, items);
 	}
 
 	/**
 	 * delete items from a category in a pantry list
+	 * 
 	 * @param pantryListName
 	 * @param groupName
 	 * @return
@@ -1092,36 +1138,38 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public int delteItems(String pantryListName, String groupName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		return db.delete(TABLE_ITEMS, KEY_LIST_NAME + "=?" + " AND "
-				+ KEY_ITEM_CATEGORY + "=?", new String[] { pantryListName, groupName });
+				+ KEY_ITEM_CATEGORY + "=?", new String[] { pantryListName,
+				groupName });
 	}
 
 	/**
 	 * delete items from a category in a shopping list
+	 * 
 	 * @param shoppingListName
 	 * @param groupName
 	 * @return
 	 */
 	public int delteShoppingItems(String shoppingListName, String groupName) {
 		SQLiteDatabase db = this.getReadableDatabase();
-		return db.delete(TABLE_SHOPPING, KEY_SHOPPING_LIST_NAME + "=?" + " AND "
-				+ KEY_ITEM_CATEGORY + "=?", new String[] { shoppingListName, groupName });
+		return db.delete(TABLE_SHOPPING, KEY_SHOPPING_LIST_NAME + "=?"
+				+ " AND " + KEY_ITEM_CATEGORY + "=?", new String[] {
+				shoppingListName, groupName });
 	}
 
 	/**
 	 * get recipe description for a give recipe
+	 * 
 	 * @param recipeName
 	 * @return
 	 */
 	public String getRecipeDes(String recipeName) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		String recipeDes = null;
-		Cursor cursor = db.query(TABLE_RECIPE_DES,
-				new String[] { KEY_RECIPE_NAME,
-				KEY_RECIPE_DES},
-				KEY_RECIPE_NAME + "=?" ,
-				new String[] { recipeName}, null, null, null);
+		Cursor cursor = db.query(TABLE_RECIPE_DES, new String[] {
+				KEY_RECIPE_NAME, KEY_RECIPE_DES }, KEY_RECIPE_NAME + "=?",
+				new String[] { recipeName }, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
-			recipeDes =cursor.getString(cursor.getColumnIndex(KEY_RECIPE_DES));
+			recipeDes = cursor.getString(cursor.getColumnIndex(KEY_RECIPE_DES));
 		}
 		cursor.close();
 		db.close();
@@ -1129,10 +1177,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	}
 
 	/**
-	 * add recipe to the recipe description table, update the table if the given recipe name
-	 * is already in the table
+	 * add recipe to the recipe description table, update the table if the given
+	 * recipe name is already in the table
+	 * 
 	 * @param listName
-	 * @return 
+	 * @return
 	 */
 	public int addRecipe(String recipeName) {
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -1145,7 +1194,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			values.putNull(KEY_RECIPE_DES);
 			String[] args = new String[1];
 			args[0] = recipeName;
-			return db.update(TABLE_RECIPE_DES, values, KEY_RECIPE_NAME + "=?", args);
+			return db.update(TABLE_RECIPE_DES, values, KEY_RECIPE_NAME + "=?",
+					args);
 		} else {
 			// record not found
 			values.put(KEY_RECIPE_NAME, recipeName);
@@ -1155,11 +1205,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			return 1;
 
 		}
-		
+
 	}
 
 	/**
 	 * add description to a recipe
+	 * 
 	 * @param recipeName
 	 * @param text
 	 */
@@ -1171,27 +1222,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		Cursor cursor = db.rawQuery(Query, null);
 		if (cursor.moveToFirst()) {
 			// record exists
-			values.put(KEY_RECIPE_DES,recipeDes);
-			
+			values.put(KEY_RECIPE_DES, recipeDes);
+
 			String[] args = new String[1];
 			args[0] = recipeName;
-			return db.update(TABLE_RECIPE_DES, values, KEY_RECIPE_NAME + "=?", args);
+			return db.update(TABLE_RECIPE_DES, values, KEY_RECIPE_NAME + "=?",
+					args);
 		} else {
 			// record not found
 			values.put(KEY_RECIPE_NAME, recipeName);
-			values.put(KEY_RECIPE_DES,recipeDes);
+			values.put(KEY_RECIPE_DES, recipeDes);
 			db.insert(TABLE_RECIPE_DES, null, values);
 			db.close();
 			return 1;
 
 		}
-		
+
 	}
 
 	/**
 	 * change the name for a recipe
-	 * @param oldRecipeName old recipe name
-	 * @param newRecipeName new recipe name
+	 * 
+	 * @param oldRecipeName
+	 *            old recipe name
+	 * @param newRecipeName
+	 *            new recipe name
 	 * @return number of records changed
 	 */
 	public int changeRecipeName(String oldRecipeName, String newRecipeName) {
@@ -1200,12 +1255,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		values.put(KEY_RECIPE_NAME, newRecipeName);
 		String[] args = new String[1];
 		args[0] = oldRecipeName;
-		int n1 = db.update(TABLE_RECIPE_DES, values, KEY_RECIPE_NAME + "=?", args);
+		int n1 = db.update(TABLE_RECIPE_DES, values, KEY_RECIPE_NAME + "=?",
+				args);
 		int n2 = db.update(TABLE_STEPS, values, KEY_RECIPE_NAME + "=?", args);
 		int n3 = db.update(TABLE_IMAGES, values, KEY_RECIPE_NAME + "=?", args);
 		int n4 = db.update(TABLE_RECIPES, values, KEY_RECIPE_NAME + "=?", args);
-		return n1+n2+n3+n4;
+		return n1 + n2 + n3 + n4;
 	}
+
 	/**
 	 * get the names of all pantry list
 	 * 
@@ -1215,8 +1272,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getReadableDatabase();
 		ArrayList<String> names = new ArrayList<String>();
 		// check recipe item table
-		Cursor cursor = db.query(TABLE_ITEMS,
-				new String[] { KEY_LIST_NAME }, null, null, null, null, null);
+		Cursor cursor = db.query(TABLE_ITEMS, new String[] { KEY_LIST_NAME },
+				null, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			while (cursor.isAfterLast() == false) {
 				String name = cursor.getString(cursor
@@ -1232,4 +1289,44 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return names;
 	}
 
+	/**
+	 * Inserting new unit into unit table
+	 * */
+	public void insertUnit(String unit) {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(KEY_UNIT_NAME, unit);
+
+		// Inserting Row
+		db.insert(TABLE_UNIT, null, values);
+		db.close(); // Closing database connection
+	}
+
+	/**
+	 * Getting all unit returns list of unit
+	 * */
+	public List<String> getAllUnits() {
+		List<String> units = new ArrayList<String>();
+
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + TABLE_UNIT;
+
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+
+		// looping through all rows and adding to list
+		if (cursor.moveToFirst()) {
+			do {
+				units.add(cursor.getString(1));
+			} while (cursor.moveToNext());
+		}
+
+		// closing connection
+		cursor.close();
+		db.close();
+
+		// returning lables
+		return units;
+	}
 }

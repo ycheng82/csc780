@@ -1,5 +1,7 @@
 package ezgrocerylist.activity;
 
+import java.util.List;
+
 import com.ezgrocerylist.R;
 
 import ezgrocerylist.sql.DatabaseHandler;
@@ -14,6 +16,7 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.NumberPicker;
@@ -22,10 +25,11 @@ import android.widget.Toast;
 import android.widget.NumberPicker.OnValueChangeListener;
 
 
-public class ItemActivity extends Activity {
-	NumberPicker npQuantity;
-	String listName, barcode,itemName,itemQuantity,editType;
-	final static public String TAG = "storage";
+public class ItemActivity extends Activity implements OnItemSelectedListener{
+	private NumberPicker npQuantity;
+	private String listName, barcode,itemName,itemQuantity,editType;
+	public final static String TAG = "storage";
+	private Spinner spinner;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,34 +50,15 @@ public class ItemActivity extends Activity {
 	
 			}
         });
-		//set up the values for item unit using spinner
-        Spinner spinner = (Spinner) findViewById(R.id.spUnit);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.item_unit, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            /**
-             * Called when a new item is selected (in the Spinner)
-             */
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View view, 
-			            int pos, long id) {
-					// TODO Auto-generated method stub
-			        String selected = parent.getItemAtPosition(pos).toString();
-
-			        if(selected.equals("other"))
-			        {
-			        	addUnit();
-			        	//NOT COMPLETE YET
-			        }
-
-				}            
-
-                public void onNothingSelected(AdapterView<?> parent) {
-                    // Do nothing, just another required interface callback
-                }
-        });
+		
+        // Spinner element
+        spinner = (Spinner) findViewById(R.id.spUnit);
+ 
+        // Spinner click listener
+        spinner.setOnItemSelectedListener(this);
+ 
+        // Loading spinner data from database
+        loadSpinnerData();
         
    
 		//set up the values for item category using spinner
@@ -177,8 +162,15 @@ public class ItemActivity extends Activity {
 		    @Override
 		    public void onClick(DialogInterface dialog, int which) {
 		    	// add (input.getText().toString()
-		    	//add to database, also read from database
-		    	//TO DO
+                // database handler
+                DatabaseHandler db = new DatabaseHandler(
+                        getApplicationContext());
+
+                // inserting new label into database
+                db.insertUnit(input.getText().toString());
+
+                // loading spinner with newly added data
+                loadSpinnerData();
 		    }
 		});
 		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -262,6 +254,46 @@ public class ItemActivity extends Activity {
 		}
 		return index;
 	}
-	
-
+    /**
+     * Function to load the spinner data for unit from SQLite database
+     * */
+    private void loadSpinnerData() {
+        // database handler
+        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+        db.addDefaultUnit();
+        // Spinner Drop down elements
+        List<String> lables = db.getAllUnits();
+ 
+        // Creating adapter for spinner
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, lables);
+ 
+        // Drop down layout style - list view with radio button
+        dataAdapter
+                .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+ 
+        // attaching data adapter to spinner
+        spinner.setAdapter(dataAdapter);
+    }	
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position,
+            long id) {
+        // On selecting a spinner item
+        String label = parent.getItemAtPosition(position).toString();
+ 
+        // Showing selected spinner item
+        Toast.makeText(parent.getContext(), "You selected: " + label,
+                Toast.LENGTH_LONG).show();
+        if (label.equals ("new")){
+        	//add new unit
+        	addUnit();
+        }
+ 
+    }
+ 
+    @Override
+    public void onNothingSelected(AdapterView<?> arg0) {
+        // TODO Auto-generated method stub
+ 
+    }
 }
