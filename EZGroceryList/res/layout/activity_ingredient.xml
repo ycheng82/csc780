@@ -18,28 +18,6 @@
         android:layout_marginRight="71dp"
         android:text="@string/label_unit" />
 
-    <Button
-        android:id="@+id/bMove"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/bDelete"
-        android:layout_alignBottom="@+id/bDelete"
-        android:layout_centerHorizontal="true"
-        android:onClick="moveItem"
-        android:text="@string/button_move" />
-
-    <Button
-        android:id="@+id/bDone"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/lbUnit"
-        android:layout_alignTop="@+id/bMove"
-        android:layout_marginLeft="14dp"
-        android:onClick="saveItem"
-        android:text="@string/button_done" />
-
     <Spinner
         android:id="@+id/spUnit"
         android:layout_width="wrap_content"
@@ -57,20 +35,6 @@
         android:layout_marginTop="10dp"
         android:text="@string/label_item_name" />
 
-    <EditText
-        android:id="@+id/etItemName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/lbItemName"
-        android:layout_alignBottom="@+id/lbItemName"
-        android:layout_alignRight="@+id/bDone"
-        android:ems="10"
-        android:inputType="none"
-        android:singleLine="true" >
-
-        <requestFocus />
-    </EditText>
-
     <TextView
         android:id="@+id/lbQuantity"
         android:layout_width="wrap_content"
@@ -86,16 +50,6 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/lbQuantity"
         android:layout_alignTop="@+id/spUnit" />
-
-    <Button
-        android:id="@+id/bDelete"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/etNote"
-        android:layout_alignParentBottom="true"
-        android:onClick="deleteItem"
-        android:text="@string/button_delete" />
 
     <TextView
         android:id="@+id/lbNote"
@@ -130,5 +84,27 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/lbCategory"
         android:layout_below="@+id/lbCategory" />
+
+    <Button
+        android:id="@+id/bDone"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="28dp"
+        android:onClick="saveItem"
+        android:text="@string/button_done" />
+
+    <EditText
+        android:id="@+id/etItemName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/lbItemName"
+        android:layout_alignBottom="@+id/lbItemName"
+        android:layout_toRightOf="@+id/npQuantity"
+        android:ems="10"
+        android:inputType="none"
+        android:singleLine="true" />
 
 </RelativeLayout>

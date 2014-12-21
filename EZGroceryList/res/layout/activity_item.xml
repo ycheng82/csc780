@@ -18,28 +18,6 @@
         android:layout_marginRight="71dp"
         android:text="@string/label_unit" />
 
-    <Button
-        android:id="@+id/bMove"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/bDelete"
-        android:layout_alignBottom="@+id/bDelete"
-        android:layout_centerHorizontal="true"
-        android:text="@string/button_move" 
-        android:onClick="moveItem"/>
-
-    <Button
-        android:id="@+id/bDone"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/lbUnit"
-        android:layout_alignTop="@+id/bMove"
-        android:layout_marginLeft="14dp"
-        android:text="@string/button_done" 
-        android:onClick="saveItem"/>
-
     <Spinner
         android:id="@+id/spUnit"
         android:layout_width="wrap_content"
@@ -57,20 +35,6 @@
         android:layout_marginTop="10dp"
         android:text="@string/label_item_name" />
 
-    <EditText
-        android:id="@+id/etItemName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/lbItemName"
-        android:layout_alignBottom="@+id/lbItemName"
-        android:layout_alignRight="@+id/bDone"
-        android:ems="10"
-        android:inputType="none"
-        android:singleLine="true" >
-
-        <requestFocus />
-    </EditText>
-
     <TextView
         android:id="@+id/lbQuantity"
         android:layout_width="wrap_content"
@@ -79,14 +43,6 @@
         android:layout_below="@+id/lbItemName"
         android:layout_marginTop="15dp"
         android:text="@string/label_quantity" />
-
-    <TextView
-        android:id="@+id/lbNote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/etNote"
-        android:layout_alignLeft="@+id/lbQuantity"
-        android:text="@string/label_note" />
 
     <NumberPicker
         android:id="@+id/npQuantity"
@@ -125,40 +81,51 @@
         android:ems="10"
         android:inputType="numberDecimal" />
 
-    <Spinner
-        android:id="@+id/spCategory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/lbDollar"
-        android:layout_marginLeft="7dp"
-        android:layout_toRightOf="@+id/etNote" />
-
     <Button
-        android:id="@+id/bDelete"
+        android:id="@+id/bDone"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/etNote"
         android:layout_alignParentBottom="true"
-        android:onClick="deleteItem"
-        android:text="@string/button_delete" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="21dp"
+        android:onClick="saveItem"
+        android:text="@string/button_done" />
 
     <EditText
         android:id="@+id/etNote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/bMove"
-        android:layout_alignLeft="@+id/lbNote"
+        android:layout_below="@+id/lbNote"
+        android:layout_marginTop="11dp"
+        android:layout_toRightOf="@+id/lbDollar"
         android:ems="10"
         android:inputType="textMultiLine" />
+
+    <Spinner
+        android:id="@+id/spCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/etItemName"
+        android:layout_alignTop="@+id/npQuantity"
+        android:layout_marginLeft="18dp" />
+
+    <TextView
+        android:id="@+id/lbNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/lbPrice"
+        android:layout_below="@+id/etBarcode"
+        android:layout_marginTop="21dp"
+        android:text="@string/label_note" />
 
     <EditText
         android:id="@+id/etBarcode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/lbBarcode"
-        android:layout_alignRight="@+id/bMove"
-        android:layout_alignTop="@+id/spUnit"
+        android:layout_alignBaseline="@+id/etPrice"
+        android:layout_alignBottom="@+id/etPrice"
+        android:layout_alignParentRight="true"
         android:ems="10"
         android:inputType="number" />
 
@@ -166,18 +133,32 @@
         android:id="@+id/lbCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/lbPrice"
-        android:layout_alignBottom="@+id/lbPrice"
-        android:layout_alignLeft="@+id/spUnit"
+        android:layout_above="@+id/spUnit"
+        android:layout_alignLeft="@+id/etItemName"
+        android:layout_marginLeft="9dp"
         android:text="@string/label_category" />
+
+    <EditText
+        android:id="@+id/etItemName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/lbQuantity"
+        android:layout_alignRight="@+id/spUnit"
+        android:layout_marginRight="7dp"
+        android:ems="10"
+        android:inputType="none"
+        android:singleLine="true" >
+
+        <requestFocus />
+    </EditText>
 
     <TextView
         android:id="@+id/lbBarcode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/spUnit"
-        android:layout_alignLeft="@+id/etItemName"
-        android:layout_marginLeft="24dp"
+        android:layout_alignBaseline="@+id/lbPrice"
+        android:layout_alignBottom="@+id/lbPrice"
+        android:layout_centerHorizontal="true"
         android:text="@string/label_barcode" />
 
 </RelativeLayout>
