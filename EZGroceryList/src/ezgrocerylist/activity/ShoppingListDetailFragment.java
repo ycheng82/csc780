@@ -13,6 +13,7 @@ import ezgrocerylist.sql.Item;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -126,9 +127,18 @@ public class ShoppingListDetailFragment extends Fragment {
 		groups = db.getShoppingListCategory(listName);
 		//if nothing to show, return to pantry activity
 		if (groups == null){
-			Intent shoppingIntent = new Intent(this.getActivity(),
+			/*Intent shoppingIntent = new Intent(this.getActivity(),
 					ShoppingActivity.class);
-			startActivity(shoppingIntent);
+			startActivity(shoppingIntent);*/
+			Fragment fragment=null;
+			fragment = new ShoppingListFragment();
+			((ShoppingListFragment) fragment).setListNames(null);
+			
+			if (fragment != null) {
+				FragmentManager fragmentManager = getFragmentManager();
+				fragmentManager.beginTransaction()
+						.replace(R.id.frame_container, fragment).commit();
+			}
 		}
 		else {
 			// children = db.getListContents(listName);
